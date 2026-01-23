@@ -1,0 +1,19 @@
+[package]
+name = "trip_maker"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.100"
+directories = "6.0.0"
+eframe = { version = "0.33.3", features = ["persistence"] }
+longitude = { version = "0.2.1", features = ["serde"] }
+open = "5.3.3"
+public-ip-address = { version = "0.4.0", features = ["blocking"] }
+rand = "0.9.2"
+reqwest = { version = "0.13.1", features = ["blocking", "json", "query"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+serde_repr = "0.1.20"
+serde_url_params = "0.2.1"
+url = "2.5.8"
