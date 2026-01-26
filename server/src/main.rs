@@ -57,7 +57,7 @@ impl TripMaker for Server {
 struct Args {
     #[arg(short, long)]
     addr: Option<std::net::IpAddr>,
-    #[arg(long)]
+    #[arg(long, env)]
     port: Option<u16>,
 
     #[arg(long, env)]
