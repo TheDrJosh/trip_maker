@@ -12,12 +12,16 @@ pub struct TripAdvisor {
     api_key: String,
 }
 
+static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
+
 impl TripAdvisor {
     pub fn new(api_key: String) -> Self {
-        Self {
-            client: reqwest::Client::new(),
-            api_key,
-        }
+        let client = reqwest::Client::builder()
+            .user_agent(APP_USER_AGENT)
+            .build()
+            .unwrap();
+
+        Self { client, api_key }
     }
 
     pub async fn details(&self) -> anyhow::Result<()> {

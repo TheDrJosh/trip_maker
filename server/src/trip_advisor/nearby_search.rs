@@ -29,12 +29,11 @@ pub enum RadiusUnit {
 }
 
 #[derive(Debug, serde::Deserialize)]
-pub struct Response {
-    #[serde(default)]
-    pub data: Option<Vec<Location>>,
-
-    #[serde(default)]
-    pub error: Option<Error>,
+pub enum Response {
+    #[serde(rename="data")]
+    Data(Option<Vec<Location>>),
+    #[serde(rename="error")]
+    Error(Option<Error>),
 }
 
 #[derive(Debug, serde::Deserialize)]
