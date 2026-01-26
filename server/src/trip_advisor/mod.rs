@@ -1,30 +1,30 @@
-use std::{cell::RefCell, rc::Rc};
+use std::collections::HashMap;
 
-use eframe::egui::ahash::HashMap;
 use url::Url;
 
 mod nearby_search;
 mod photos;
 mod reviews;
 
+#[derive(Clone)]
 pub struct TripAdvisor {
-    client: reqwest::blocking::Client,
-    api_key: Rc<RefCell<String>>,
+    client: reqwest::Client,
+    api_key: String,
 }
 
 impl TripAdvisor {
-    pub fn new(api_key: Rc<RefCell<String>>) -> Self {
+    pub fn new(api_key: String) -> Self {
         Self {
-            client: reqwest::blocking::Client::new(),
+            client: reqwest::Client::new(),
             api_key,
         }
     }
 
-    pub fn details(&self) -> anyhow::Result<()> {
+    pub async fn details(&self) -> anyhow::Result<()> {
         todo!()
     }
 
-    pub fn photos(
+    pub async fn photos(
         &self,
         location_id: i32,
         params: photos::Params,
@@ -34,14 +34,14 @@ impl TripAdvisor {
             location_id
         ))?;
         url.set_query(Some(&serde_url_params::to_string(&WithApiKey {
-            key: self.api_key.borrow().clone(),
+            key: self.api_key.clone(),
             data: params,
         })?));
 
-        Ok(self.client.get(url).send()?.json()?)
+        Ok(self.client.get(url).send().await?.json().await?)
     }
 
-    pub fn reviews(
+    pub async fn reviews(
         &self,
         location_id: i32,
         params: reviews::Params,
@@ -51,28 +51,28 @@ impl TripAdvisor {
             location_id
         ))?;
         url.set_query(Some(&serde_url_params::to_string(&WithApiKey {
-            key: self.api_key.borrow().clone(),
+            key: self.api_key.clone(),
             data: params,
         })?));
 
-        Ok(self.client.get(url).send()?.json()?)
+        Ok(self.client.get(url).send().await?.json().await?)
     }
 
-    pub fn search(&self) -> anyhow::Result<()> {
+    pub async fn search(&self) -> anyhow::Result<()> {
         todo!()
     }
 
-    pub fn nearby_search(
+    pub async fn nearby_search(
         &self,
         params: nearby_search::Params,
     ) -> anyhow::Result<nearby_search::Response> {
         let mut url = Url::parse("https://api.content.tripadvisor.com/api/v1/location/{}/reviews")?;
         url.set_query(Some(&serde_url_params::to_string(&WithApiKey {
-            key: self.api_key.borrow().clone(),
+            key: self.api_key.clone(),
             data: params,
         })?));
 
-        Ok(self.client.get(url).send()?.json()?)
+        Ok(self.client.get(url).send().await?.json().await?)
     }
 }
 

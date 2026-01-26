@@ -1,4 +1,4 @@
-use eframe::egui::ahash::HashMap;
+use std::collections::HashMap;
 
 use crate::trip_advisor::{Error, Language, Paging, User};
 

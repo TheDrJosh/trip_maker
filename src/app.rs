@@ -1,33 +1,32 @@
-use std::{cell::RefCell, rc::Rc};
-
-use eframe::egui::{self};
+use common::LocationInfo;
+use eframe::egui::{self, Color32, RichText};
 use longitude::{Distance, DistanceUnit, Location};
-use url::form_urlencoded::Target;
 
-use crate::{location::LocationOption, trip_advisor::TripAdvisor, utils};
+use crate::connection::Connection;
 
 pub struct App {
-    current_location: Location,
+    current_position: Location,
     settings: Settings,
 
-    open_location: Option<usize>,
-    locations: Option<Vec<LocationOption>>,
+    connection: Connection,
 
-    client: TripAdvisor,
+    open_location: Option<usize>,
+    locations: Option<Vec<LocationInfo>>,
+    locations_error: Option<String>,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Settings {
-    api_key: Rc<RefCell<String>>,
+    server_addr: String,
     max_distance: f64,
     distance_unit: DistanceUnit,
-    number_to_generate: u8,
+    number_to_generate: usize,
 }
 
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            api_key: Default::default(),
+            server_addr: Default::default(),
             max_distance: 30.0,
             distance_unit: DistanceUnit::Miles,
             number_to_generate: 5,
@@ -44,7 +43,7 @@ impl eframe::App for App {
 
             if let Some(open_location) = self.open_location {
                 if let Some(options) = &self.locations {
-                    if options[open_location].expanded(ui) {
+                    if location_expanded(ui, &options[open_location]) {
                         self.open_location = None;
                     }
                 } else {
@@ -83,11 +82,12 @@ impl App {
         };
 
         Self {
-            current_location: location,
+            current_position: location,
             open_location: None,
             locations: None,
-            client: TripAdvisor::new(settings.api_key.clone()),
             settings,
+            connection: Default::default(),
+            locations_error: None,
         }
     }
 
@@ -97,27 +97,27 @@ impl App {
                 ui.vertical(|ui| {
                     ui.heading("Location");
                     ui.label("Latitude");
-                    let mut lat_text = self.current_location.latitude.to_string();
+                    let mut lat_text = self.current_position.latitude.to_string();
                     ui.text_edit_singleline(&mut lat_text);
                     if let Some(new_lat) = lat_text.parse().ok() {
-                        self.current_location.latitude = new_lat;
+                        self.current_position.latitude = new_lat;
                     } else if lat_text.is_empty() {
-                        self.current_location.latitude = 0.0;
+                        self.current_position.latitude = 0.0;
                     }
 
                     ui.label("Longitude");
-                    let mut long_text = self.current_location.longitude.to_string();
+                    let mut long_text = self.current_position.longitude.to_string();
                     ui.text_edit_singleline(&mut long_text);
                     if let Some(new_long) = long_text.parse().ok() {
-                        self.current_location.longitude = new_long;
+                        self.current_position.longitude = new_long;
                     } else if long_text.is_empty() {
-                        self.current_location.longitude = 0.0;
+                        self.current_position.longitude = 0.0;
                     }
 
                     if ui.button("Use Current Location").clicked() {
                         let pos = public_ip_address::perform_lookup(None).ok();
 
-                        self.current_location = Location {
+                        self.current_position = Location {
                             latitude: pos
                                 .as_ref()
                                 .and_then(|pos| pos.latitude)
@@ -135,10 +135,30 @@ impl App {
                 ui.vertical(|ui| {
                     ui.heading("Settings");
 
-                    ui.label("Api Key");
-                    ui.text_edit_singleline(self.settings.api_key.borrow_mut().as_mut_string());
+                    ui.label("Server Address");
+                    ui.text_edit_singleline(&mut self.settings.server_addr);
 
-                    ui.label("Max Distance*").on_hover_text("This is not exact");
+                    if ui.button("Connect").clicked() {
+                        self.connection.connect(self.settings.server_addr.clone());
+                    }
+
+                    if self.connection.loading() {
+                        ui.label("Loading...");
+                    } else {
+                        if let Some(err) = self
+                            .connection
+                            .error
+                            .try_lock()
+                            .ok()
+                            .as_deref()
+                            .cloned()
+                            .flatten()
+                        {
+                            ui.label(RichText::new(err).color(Color32::RED));
+                        }
+                    }
+
+                    ui.label("Max Distance");
 
                     ui.horizontal(|ui| {
                         let mut max_distance_str = self.settings.max_distance.to_string();
@@ -215,11 +235,15 @@ impl App {
             self.generate_options();
         }
 
+        if let Some(err) = &self.locations_error {
+            ui.label(RichText::new(err).color(Color32::RED));
+        }
+
         if let Some(locations) = &self.locations {
             ui.horizontal(|ui| {
                 ui.group(|ui| {
                     for (i, location) in locations.iter().enumerate() {
-                        if location.preview(ui) {
+                        if location_preview(ui, location) {
                             self.open_location = Some(i);
                         }
                     }
@@ -229,17 +253,36 @@ impl App {
     }
 
     fn generate_options(&mut self) {
-        let mut locations = Vec::with_capacity(self.settings.number_to_generate as usize);
+        self.locations_error = None;
 
-        while locations.len() < self.settings.number_to_generate as usize {
-            let point = utils::get_rand_cord(
-                &self.current_location,
-                &Distance::from(self.settings.max_distance, self.settings.distance_unit),
-            );
-            println!("{:?}", point);
-            locations.push(LocationOption {});
+        match self.connection.get_random_location(
+            self.current_position.clone(),
+            Distance::from(self.settings.max_distance, self.settings.distance_unit),
+            self.settings.number_to_generate,
+        ) {
+            Ok(locations) => {
+                self.locations = Some(locations);
+                self.locations_error = None;
+            }
+            Err(err) => {
+                self.locations = None;
+                self.locations_error = Some(err);
+            }
         }
-
-        self.locations = Some(locations);
     }
+}
+
+pub fn location_preview(ui: &mut egui::Ui, info: &common::LocationInfo) -> bool {
+    ui.vertical(|ui| {
+        ui.group(|ui| {
+            ui.heading("test");
+            ui.button("More Info").clicked()
+        })
+        .inner
+    })
+    .inner
+}
+
+pub fn location_expanded(ui: &mut egui::Ui, info: &common::LocationInfo) -> bool {
+    ui.button("Back").clicked()
 }
