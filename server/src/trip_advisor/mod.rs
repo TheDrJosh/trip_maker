@@ -82,6 +82,8 @@ impl TripAdvisor {
             data: params,
         })?));
 
+        tracing::info!("{}", url.to_string());
+
         let res_text = self
             .client
             .get(url)
