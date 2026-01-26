@@ -10,19 +10,23 @@ pub mod reviews;
 pub struct TripAdvisor {
     client: reqwest::Client,
     api_key: String,
+    domain: String,
 }
 
 static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
 
 impl TripAdvisor {
-    pub fn new(api_key: String) -> Self {
+    pub fn new(api_key: String, domain: String) -> Self {
         let client = reqwest::Client::builder()
             .user_agent(APP_USER_AGENT)
-            .referer(true)
             .build()
             .unwrap();
 
-        Self { client, api_key }
+        Self {
+            client,
+            api_key,
+            domain,
+        }
     }
 
     pub async fn details(&self) -> anyhow::Result<()> {
@@ -71,14 +75,21 @@ impl TripAdvisor {
         &self,
         params: nearby_search::Params,
     ) -> anyhow::Result<nearby_search::Response> {
-        // let mut url = Url::parse("https://api.content.tripadvisor.com/api/v1/location/nearby_search")?;
-        let mut url = Url::parse("https://httpbin.org/headers")?;
+        let mut url = Url::parse("https://api.content.tripadvisor.com/api/v1/location/nearby_search")?;
+        // let mut url = Url::parse("https://httpbin.org/headers")?;
         url.set_query(Some(&serde_url_params::to_string(&WithApiKey {
             key: self.api_key.clone(),
             data: params,
         })?));
 
-        let res_text = self.client.get(url).send().await?.text().await?;
+        let res_text = self
+            .client
+            .get(url)
+            .header("Referer", self.domain.clone())
+            .send()
+            .await?
+            .text()
+            .await?;
 
         tracing::info!("{}", res_text);
 
