@@ -71,7 +71,8 @@ impl TripAdvisor {
         &self,
         params: nearby_search::Params,
     ) -> anyhow::Result<nearby_search::Response> {
-        let mut url = Url::parse("https://api.content.tripadvisor.com/api/v1/location/nearby_search")?;
+        // let mut url = Url::parse("https://api.content.tripadvisor.com/api/v1/location/nearby_search")?;
+        let mut url = Url::parse("httpbin.org/")?;
         url.set_query(Some(&serde_url_params::to_string(&WithApiKey {
             key: self.api_key.clone(),
             data: params,
