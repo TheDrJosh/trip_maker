@@ -45,7 +45,7 @@ impl TripMaker for Server {
         let mut locations = Vec::with_capacity(number_to_generate);
 
         while locations.len() < number_to_generate {
-            locations.push(LocationInfo{});
+            locations.push(LocationInfo {});
         }
 
         Ok(locations)
@@ -55,7 +55,7 @@ impl TripMaker for Server {
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    #[arg(short, long)]
+    #[arg(short, long, env)]
     addr: Option<std::net::IpAddr>,
     #[arg(long, env)]
     port: Option<u16>,
