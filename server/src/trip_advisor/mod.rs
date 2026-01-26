@@ -12,7 +12,7 @@ pub struct TripAdvisor {
     api_key: String,
 }
 
-static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
+static APP_USER_AGENT: &str = "Trip Maker";
 
 impl TripAdvisor {
     pub fn new(api_key: String) -> Self {
