@@ -7,4 +7,3 @@ edition = "2024"
 longitude = { version = "0.2.2", features = ["serde"] }
 serde = "1.0.228"
 tarpc = "0.37.0"
-thiserror = "2.0.18"

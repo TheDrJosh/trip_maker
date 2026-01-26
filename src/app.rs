@@ -81,12 +81,16 @@ impl App {
             Default::default()
         };
 
+        let mut connection = Connection::default();
+
+        connection.connect(settings.server_addr.clone());
+
         Self {
             current_position: location,
             open_location: None,
             locations: None,
             settings,
-            connection: Default::default(),
+            connection,
             locations_error: None,
         }
     }
@@ -144,18 +148,27 @@ impl App {
 
                     if self.connection.loading() {
                         ui.label("Loading...");
+                    } else if let Some(err) = self
+                        .connection
+                        .error
+                        .try_lock()
+                        .ok()
+                        .as_deref()
+                        .cloned()
+                        .flatten()
+                    {
+                        ui.label(RichText::new(err).color(Color32::RED));
+                    } else if self
+                        .connection
+                        .client
+                        .try_lock()
+                        .ok()
+                        .map(|client| client.is_some())
+                        .unwrap_or_default()
+                    {
+                        ui.label("Connected");
                     } else {
-                        if let Some(err) = self
-                            .connection
-                            .error
-                            .try_lock()
-                            .ok()
-                            .as_deref()
-                            .cloned()
-                            .flatten()
-                        {
-                            ui.label(RichText::new(err).color(Color32::RED));
-                        }
+                        ui.label("Not Connected");
                     }
 
                     ui.label("Max Distance");

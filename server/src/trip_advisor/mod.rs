@@ -2,9 +2,9 @@ use std::collections::HashMap;
 
 use url::Url;
 
-mod nearby_search;
-mod photos;
-mod reviews;
+pub mod nearby_search;
+pub mod photos;
+pub mod reviews;
 
 #[derive(Clone)]
 pub struct TripAdvisor {

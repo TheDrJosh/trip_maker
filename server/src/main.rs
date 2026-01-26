@@ -1,7 +1,7 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
 use clap::Parser;
-use common::{LocationError, LocationInfo, TripMaker};
+use common::{LocationInfo, TripMaker};
 use dotenvy::dotenv;
 use futures::StreamExt;
 use longitude::{Direction, Distance, Location};
@@ -41,8 +41,24 @@ impl TripMaker for Server {
         location: Location,
         max_distance: Distance,
         number_to_generate: usize,
-    ) -> Result<Vec<LocationInfo>, LocationError> {
+    ) -> Result<Vec<LocationInfo>, String> {
         let mut locations = Vec::with_capacity(number_to_generate);
+
+        let res = self
+            .client
+            .nearby_search(trip_advisor::nearby_search::Params {
+                lat_long: location.to_string(),
+                category: None,
+                phone: None,
+                address: None,
+                radius: Some((max_distance.kilometers() * 2.0).to_string()),
+                radius_unit: Some(trip_advisor::nearby_search::RadiusUnit::Kilometers),
+                language: None,
+            })
+            .await
+            .map_err(|err| err.to_string())?;
+
+        tracing::info!("{:?}", res);
 
         while locations.len() < number_to_generate {
             locations.push(LocationInfo {});

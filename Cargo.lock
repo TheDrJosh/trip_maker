@@ -779,7 +779,6 @@ dependencies = [
  "longitude",
  "serde",
  "tarpc",
- "thiserror 2.0.18",
 ]
 
 [[package]]
