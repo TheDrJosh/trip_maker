@@ -11,7 +11,7 @@ use tarpc::{
     server::{Channel, incoming::Incoming},
 };
 
-use crate::trip_advisor::TripAdvisor;
+use crate::trip_advisor::{TripAdvisor, details};
 
 mod trip_advisor;
 
@@ -21,13 +21,15 @@ struct Server {
     client: TripAdvisor,
 }
 
-pub fn get_rand_cord(center: &Location, radius: &Distance) -> Location {
+pub fn get_rand_cord(center: &Location, radius: &Distance, closeness: f64) -> Location {
     let mut rand = rand::rng();
     let angle = rand.random::<f64>() * std::f64::consts::PI;
     let dist = rand.random::<f64>();
 
-    let distance_north = Distance::from_kilometers(radius.kilometers() * dist * dist * angle.sin());
-    let distance_east = Distance::from_kilometers(radius.kilometers() * dist * dist * angle.cos());
+    let dist = dist.powf(closeness);
+
+    let distance_north = Distance::from_kilometers(radius.kilometers() * dist * angle.sin());
+    let distance_east = Distance::from_kilometers(radius.kilometers() * dist * angle.cos());
 
     center
         .add(&distance_north, Direction::North)
@@ -38,29 +40,50 @@ impl TripMaker for Server {
     async fn get_random_location(
         self,
         _context: Context,
-        location: Location,
+        center: Location,
         max_distance: Distance,
         number_to_generate: usize,
+        min_rating: f32,
+        closeness: f64,
     ) -> Result<Vec<LocationInfo>, String> {
         let mut locations = Vec::with_capacity(number_to_generate);
 
-        let res = self
-            .client
-            .nearby_search(trip_advisor::nearby_search::Params {
-                lat_long: location.to_string(),
-                category: None,
-                phone: None,
-                address: None,
-                radius: Some((max_distance.kilometers() * 2.0).to_string()),
-                radius_unit: Some(trip_advisor::nearby_search::RadiusUnit::Kilometers),
-                language: None,
-            })
-            .await
-            .map_err(|err| err.to_string())?;
-
-        tracing::info!("{:?}", res);
-
         while locations.len() < number_to_generate {
+            let rand_loc = get_rand_cord(&center, &max_distance, closeness);
+
+            let res = futures::future::join_all(
+                self.client
+                    .nearby_search(trip_advisor::nearby_search::Params {
+                        lat_long: rand_loc.to_string(),
+                        category: Some(trip_advisor::nearby_search::Category::Attractions),
+                        phone: None,
+                        address: None,
+                        radius: Some((max_distance.kilometers() * 2.0).to_string()),
+                        radius_unit: Some(trip_advisor::nearby_search::RadiusUnit::Kilometers),
+                        language: None,
+                    })
+                    .await
+                    .map_err(|err| err.to_string())?
+                    .to_result()
+                    .map_err(|err| err.message)?
+                    .into_iter()
+                    .map(|loc| {
+                        self.client.details(
+                            loc.location_id,
+                            trip_advisor::details::Params {
+                                language: None,
+                                currency: None,
+                            },
+                        )
+                    }),
+            )
+            .await
+            .into_iter()
+            .filter_map(|res| res.ok().map(|res| res.to_result().ok()).flatten())
+            .collect::<Vec<details::Details>>();
+
+            println!("{:?}", res);
+
             locations.push(LocationInfo {});
         }
 

@@ -1,0 +1,164 @@
+use crate::trip_advisor::{Address, Error, Language};
+
+#[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Params {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub language: Option<Language>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub currency: Option<String>,
+}
+
+//https://en.wikipedia.org/wiki/ISO_4217
+
+// #[derive(Debug, serde::Serialize)]
+// pub enum Currency {
+//     #[serde(rename = "AED")]
+//     UnitedArabEmiratesDirham,
+//     #[serde(rename = "AFN")]
+//     AfghanAfghani,
+//     #[serde(rename = "ALL")]
+//     AlbanianLek,
+//     #[serde(rename = "AMD")]
+//     ArmenianDram,
+// }
+
+#[derive(Debug, serde::Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Response {
+    Error(Error),
+    #[serde(untagged)]
+    Data(Details),
+}
+
+impl Response {
+    pub fn to_result(self) -> Result<Details, Error> {
+        match self {
+            Response::Data(data) => Ok(data),
+            Response::Error(err) => Err(err),
+        }
+    }
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct Details {
+    pub location_id: String,
+    pub name: String,
+    pub description: String,
+    pub web_url: String,
+    pub addrss_obj: Address,
+    pub ancestors: Vec<Ancestor>,
+    pub latitude: f32,
+    pub longitude: f32,
+    pub timezone: String,
+    pub email: String,
+    pub phone: String,
+    pub website: String,
+    pub write_review: String,
+    pub ranking_data: RankingData,
+    pub rating: f32,
+    pub rating_image_url: String,
+    pub num_review: String,
+    pub review_rating_count: ReviewRatingCount,
+    pub photo_count: String,
+    pub see_all_photos: String,
+    pub prive_level: Option<String>,
+    pub hours: Hours,
+    pub amenities: Vec<String>,
+    pub features: Vec<String>,
+    pub cuisine: Vec<Name>,
+    pub parent_brand: String,
+    pub brand: String,
+    pub category: Name,
+    pub subcategory: Vec<Name>,
+    pub group: Vec<Group>,
+    pub styles: Vec<String>,
+    pub neighborhood_info: Vec<Name>,
+    pub trip_types: Vec<TripType>,
+    pub awards: Vec<Award>,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct Ancestor {
+    pub abbrv: String,
+    pub level: String,
+    pub name: String,
+    pub location_id: String,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct RankingData {
+    pub geo_location_id: String,
+    pub ranking_string: String,
+    pub geo_location_name: String,
+    pub ranking_out_of: String,
+    pub ranking: String,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct ReviewRatingCount {
+    #[serde(rename = "1")]
+    pub one: String,
+    #[serde(rename = "2")]
+    pub two: String,
+    #[serde(rename = "3")]
+    pub three: String,
+    #[serde(rename = "4")]
+    pub four: String,
+    #[serde(rename = "5")]
+    pub five: String,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct Hours {
+    pub periods: Vec<Period>,
+    pub weekday_text: Vec<String>,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct Period {
+    pub open: DayTime,
+    pub close: DayTime,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct DayTime {
+    pub day: String,
+    pub time: String,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct Name {
+    pub name: String,
+    pub localized_name: String,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct Group {
+    #[serde(flatten)]
+    pub name: Name,
+    pub categories: Vec<Name>,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct TripType {
+    #[serde(flatten)]
+    pub name: Name,
+    pub value: String,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct Award {
+    pub award_type: String,
+    pub year: String,
+    pub images: AwardImage,
+    pub categories: Vec<String>,
+    pub display_name: String,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct AwardImage {
+    tiny: String,
+    small: String,
+    large: String,
+}

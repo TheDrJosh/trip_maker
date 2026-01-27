@@ -1,11 +1,11 @@
-use crate::trip_advisor::{Error, Language};
+use crate::trip_advisor::{Address, Error, Language};
 
 #[derive(Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Params {
     pub lat_long: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub category: Option<String>,
+    pub category: Option<Category>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub phone: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -19,6 +19,15 @@ pub struct Params {
 }
 
 #[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Category {
+    Hotels,
+    Attractions,
+    Restaurants,
+    Geos,
+}
+
+#[derive(Debug, serde::Serialize)]
 pub enum RadiusUnit {
     #[serde(rename = "km")]
     Kilometers,
@@ -29,11 +38,20 @@ pub enum RadiusUnit {
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum Response {
-    #[serde(rename="data")]
-    Data(Option<Vec<Location>>),
-    #[serde(rename="error")]
-    Error(Option<Error>),
+    Data(Vec<Location>),
+    #[serde(untagged)]
+    Error(Error),
+}
+
+impl Response {
+    pub fn to_result(self) -> Result<Vec<Location>, Error> {
+        match self {
+            Response::Data(data) => Ok(data),
+            Response::Error(err) => Err(err),
+        }
+    }
 }
 
 #[derive(Debug, serde::Deserialize)]
@@ -43,15 +61,4 @@ pub struct Location {
     pub distance: String,
     pub bearing: String,
     pub address_obj: Address,
-}
-
-#[derive(Debug, serde::Deserialize)]
-pub struct Address {
-    pub street1: String,
-    pub street2: Option<String>,
-    pub city: String,
-    pub state: String,
-    pub country: String,
-    pub postalcode: String,
-    pub address_string: String,
 }

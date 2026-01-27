@@ -2,9 +2,11 @@ use std::collections::HashMap;
 
 use url::Url;
 
+pub mod details;
 pub mod nearby_search;
 pub mod photos;
 pub mod reviews;
+pub mod search;
 
 #[derive(Clone)]
 pub struct TripAdvisor {
@@ -24,13 +26,26 @@ impl TripAdvisor {
         Self { client, api_key }
     }
 
-    pub async fn details(&self) -> anyhow::Result<()> {
-        todo!()
+    pub async fn details(
+        &self,
+        location_id: String,
+        params: details::Params,
+    ) -> anyhow::Result<details::Response> {
+        let mut url = Url::parse(&format!(
+            "https://api.content.tripadvisor.com/api/v1/location/{}/details",
+            location_id
+        ))?;
+        url.set_query(Some(&serde_url_params::to_string(&WithApiKey {
+            key: self.api_key.clone(),
+            data: params,
+        })?));
+
+        Ok(self.client.get(url).send().await?.json().await?)
     }
 
     pub async fn photos(
         &self,
-        location_id: i32,
+        location_id: String,
         params: photos::Params,
     ) -> anyhow::Result<photos::Response> {
         let mut url = Url::parse(&format!(
@@ -47,7 +62,7 @@ impl TripAdvisor {
 
     pub async fn reviews(
         &self,
-        location_id: i32,
+        location_id: String,
         params: reviews::Params,
     ) -> anyhow::Result<reviews::Response> {
         let mut url = Url::parse(&format!(
@@ -77,13 +92,7 @@ impl TripAdvisor {
             data: params,
         })?));
 
-        let res_text = self.client.get(url).send().await?.text().await?;
-
-        tracing::info!("{}", res_text);
-
-        Ok(serde_json::from_str(&res_text)?)
-
-        // Ok(self.client.get(url).send().await?.json().await?)
+        Ok(self.client.get(url).send().await?.json().await?)
     }
 }
 
@@ -96,34 +105,45 @@ pub struct WithApiKey<T> {
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Error {
-    message: String,
+    pub message: String,
     #[serde(rename = "type")]
-    err_type: String,
-    code: i32,
+    pub err_type: String,
+    pub code: i32,
 }
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Paging {
-    next: String,
-    previous: String,
-    results: i32,
-    total_results: i32,
-    skipped: i32,
+    pub next: String,
+    pub previous: String,
+    pub results: i32,
+    pub total_results: i32,
+    pub skipped: i32,
 }
 
 #[derive(Debug, serde::Deserialize)]
 pub struct User {
-    username: String,
-    user_location: UserLocation,
-    review_count: i32,
-    reviewer_badge: String,
-    avatar: HashMap<String, serde_json::Value>,
+    pub username: String,
+    pub user_location: UserLocation,
+    pub review_count: i32,
+    pub reviewer_badge: String,
+    pub avatar: HashMap<String, serde_json::Value>,
 }
 
 #[derive(Debug, serde::Deserialize)]
 pub struct UserLocation {
-    id: String,
-    name: String,
+    pub id: String,
+    pub name: String,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct Address {
+    pub street1: String,
+    pub street2: Option<String>,
+    pub city: String,
+    pub state: String,
+    pub country: String,
+    pub postalcode: String,
+    pub address_string: String,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]

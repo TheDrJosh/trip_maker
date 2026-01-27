@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 
-use serde_repr::Deserialize_repr;
-
 use crate::trip_advisor::{Error, Language, Paging, User};
 
 #[derive(Debug, serde::Serialize)]
@@ -32,7 +30,7 @@ pub struct Review {
     lang: Language,
     location_id: i32,
     published_data: String,
-    rating: Rating,
+    rating: f32,
     helpful_votes: i32,
     rating_image_url: String,
     url: String,
@@ -62,16 +60,6 @@ pub struct Subrating {
     localized_name: String,
     rating_image_url: String,
     value: f32,
-}
-
-#[derive(Debug, Deserialize_repr)]
-#[repr(i32)]
-enum Rating {
-    Terrible = 1,
-    Poor,
-    Average,
-    VeryGood,
-    Excellent,
 }
 
 #[derive(Debug, serde::Deserialize)]
