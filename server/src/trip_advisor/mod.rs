@@ -193,7 +193,7 @@ pub struct UserLocation {
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Address {
-    pub street1: String,
+    pub street1: Option<String>,
     pub street2: Option<String>,
     pub city: String,
     pub state: String,
