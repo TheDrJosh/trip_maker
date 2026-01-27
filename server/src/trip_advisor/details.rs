@@ -1,3 +1,5 @@
+use serde_json::Value;
+
 use crate::trip_advisor::{Address, Error, Language};
 
 #[derive(Debug, serde::Serialize)]
@@ -54,11 +56,11 @@ pub struct Details {
     pub phone: Option<String>,
     pub website: Option<String>,
     pub write_review: String,
-    pub ranking_data: RankingData,
+    pub ranking_data: Option<RankingData>,
     pub rating: String,
     pub rating_image_url: String,
-    pub num_review: String,
-    pub review_rating_count: ReviewRatingCount,
+    pub num_review: Option<String>,
+    pub review_rating_count: Value,
     pub photo_count: String,
     pub see_all_photos: String,
     pub prive_level: Option<String>,
@@ -94,19 +96,19 @@ pub struct RankingData {
     pub ranking: String,
 }
 
-#[derive(Debug, serde::Deserialize)]
-pub struct ReviewRatingCount {
-    #[serde(rename = "1")]
-    pub one: String,
-    #[serde(rename = "2")]
-    pub two: String,
-    #[serde(rename = "3")]
-    pub three: String,
-    #[serde(rename = "4")]
-    pub four: String,
-    #[serde(rename = "5")]
-    pub five: String,
-}
+// #[derive(Debug, serde::Deserialize)]
+// pub struct ReviewRatingCount {
+//     #[serde(rename = "1")]
+//     pub one: String,
+//     #[serde(rename = "2")]
+//     pub two: String,
+//     #[serde(rename = "3")]
+//     pub three: String,
+//     #[serde(rename = "4")]
+//     pub four: String,
+//     #[serde(rename = "5")]
+//     pub five: String,
+// }
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Hours {
