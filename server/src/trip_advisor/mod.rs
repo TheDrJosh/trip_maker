@@ -100,15 +100,29 @@ impl TripAdvisor {
             data: params,
         })?));
 
-        Ok(self
+        let text = self
             .client
             .get(url)
             .send()
             .await
             .map_err(log_err)?
-            .json()
+            .text()
             .await
-            .map_err(log_err)?)
+            .map_err(log_err)?;
+
+        tracing::info!("{}", text);
+
+        Ok(serde_json::from_str(&text).map_err(log_err)?)
+
+        // Ok(self
+        //     .client
+        //     .get(url)
+        //     .send()
+        //     .await
+        //     .map_err(log_err)?
+        //     .json()
+        //     .await
+        //     .map_err(log_err)?)
     }
 }
 
@@ -126,11 +140,11 @@ pub struct WithApiKey<T> {
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Error {
-    #[serde(rename="Message")]
+    #[serde(rename = "Message")]
     pub message: String,
     // #[serde(rename = "Type")]
     // pub err_type: String,
-    // pub Code: i32,
+    // pub code: i32,
 }
 
 #[derive(Debug, serde::Deserialize)]
