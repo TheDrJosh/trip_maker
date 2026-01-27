@@ -10,13 +10,12 @@ pub mod reviews;
 pub struct TripAdvisor {
     client: reqwest::Client,
     api_key: String,
-    domain: String,
 }
 
 static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
 
 impl TripAdvisor {
-    pub fn new(api_key: String, domain: String) -> Self {
+    pub fn new(api_key: String) -> Self {
         let client = reqwest::Client::builder()
             .user_agent(APP_USER_AGENT)
             .build()
@@ -25,7 +24,6 @@ impl TripAdvisor {
         Self {
             client,
             api_key,
-            domain,
         }
     }
 
@@ -87,7 +85,6 @@ impl TripAdvisor {
         let res_text = self
             .client
             .get(url)
-            .header("Referer", self.domain.clone())
             .send()
             .await?
             .text()

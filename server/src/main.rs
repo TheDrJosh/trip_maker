@@ -78,9 +78,6 @@ struct Args {
 
     #[arg(long, env)]
     api_key: String,
-
-    #[arg(long, env)]
-    railway_public_domain: String,
 }
 
 async fn spawn(fut: impl Future<Output = ()> + Send + 'static) {
@@ -111,7 +108,7 @@ async fn main() {
         .map(|channel| {
             let server = Server {
                 addr: channel.transport().peer_addr().unwrap(),
-                client: TripAdvisor::new(args.api_key.clone(), args.railway_public_domain.clone()),
+                client: TripAdvisor::new(args.api_key.clone()),
             };
             channel.execute(server.serve()).for_each(spawn)
         })
