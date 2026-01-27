@@ -48,7 +48,7 @@ pub struct Location {
 #[derive(Debug, serde::Deserialize)]
 pub struct Address {
     pub street1: String,
-    pub street2: String,
+    pub street2: Option<String>,
     pub city: String,
     pub state: String,
     pub country: String,
