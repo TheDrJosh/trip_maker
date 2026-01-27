@@ -67,9 +67,9 @@ impl Connection {
         location: Location,
         max_distance: Distance,
         number_to_generate: usize,
+        min_rating: f64,
+        closeness_bias: f64,
     ) -> Result<Vec<LocationInfo>, String> {
-        // self.locations_error = Some("Server Connection Not Found".to_owned());
-
         let (res_send, res_receive) = tokio::sync::oneshot::channel();
 
         let client = self.client.clone();
@@ -82,6 +82,8 @@ impl Connection {
                         location,
                         max_distance,
                         number_to_generate,
+                        min_rating,
+                        closeness_bias,
                     )
                     .await,
                 )
@@ -96,6 +98,8 @@ impl Connection {
         location: Location,
         max_distance: Distance,
         number_to_generate: usize,
+        min_rating: f64,
+        closeness_bias: f64,
     ) -> Result<Vec<LocationInfo>, String> {
         if let Some(client) = client.lock().await.as_ref() {
             Ok(client
@@ -104,8 +108,8 @@ impl Connection {
                     location,
                     max_distance,
                     number_to_generate,
-                    0.0,
-                    2.0,
+                    min_rating,
+                    closeness_bias,
                 )
                 .await
                 .map_err(|err| err.to_string())?

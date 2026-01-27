@@ -21,6 +21,8 @@ pub struct Settings {
     max_distance: f64,
     distance_unit: DistanceUnit,
     number_to_generate: usize,
+    closeness_bias: f64,
+    minimum_rating: f64,
 }
 
 impl Default for Settings {
@@ -30,6 +32,8 @@ impl Default for Settings {
             max_distance: 30.0,
             distance_unit: DistanceUnit::Miles,
             number_to_generate: 5,
+            closeness_bias: 1.0,
+            minimum_rating: 0.0,
         }
     }
 }
@@ -174,14 +178,10 @@ impl App {
                     ui.label("Max Distance");
 
                     ui.horizontal(|ui| {
-                        let mut max_distance_str = self.settings.max_distance.to_string();
-                        ui.text_edit_singleline(&mut max_distance_str);
-                        if let Some(max_distance) = max_distance_str.parse().ok() {
-                            self.settings.max_distance = max_distance;
-                        } else if max_distance_str.is_empty() {
-                            self.settings.max_distance = 0.0;
-                        }
-
+                        ui.add(egui::Slider::new(
+                            &mut self.settings.max_distance,
+                            0.0..=100.0,
+                        ));
                         egui::containers::ComboBox::from_label("")
                             .selected_text(format!("{:?}", self.settings.distance_unit))
                             .show_ui(ui, |ui| {
@@ -224,22 +224,25 @@ impl App {
                     });
 
                     ui.label("Number to Generate");
-                    let mut number_to_generate_str = self.settings.number_to_generate.to_string();
 
-                    ui.horizontal(|ui| {
-                        ui.text_edit_singleline(&mut number_to_generate_str);
-                        if let Some(number_to_generate) = number_to_generate_str.parse().ok() {
-                            self.settings.number_to_generate = number_to_generate;
-                        } else if number_to_generate_str.is_empty() {
-                            self.settings.number_to_generate = 0;
-                        }
-                        if ui.button("+").clicked() {
-                            self.settings.number_to_generate += 1;
-                        }
-                        if ui.button("-").clicked() && self.settings.number_to_generate != 0 {
-                            self.settings.number_to_generate -= 1;
-                        }
-                    });
+                    ui.add(egui::Slider::new(
+                        &mut self.settings.number_to_generate,
+                        0..=10,
+                    ));
+
+                    ui.label("Closeness Bias");
+
+                    ui.add(egui::Slider::new(
+                        &mut self.settings.closeness_bias,
+                        -3.0..=3.0,
+                    ));
+
+                    ui.label("Minimum Rating");
+
+                    ui.add(egui::Slider::new(
+                        &mut self.settings.minimum_rating,
+                        0.0..=5.0,
+                    ));
                 });
             });
         });
@@ -272,9 +275,10 @@ impl App {
             self.current_position.clone(),
             Distance::from(self.settings.max_distance, self.settings.distance_unit),
             self.settings.number_to_generate,
+            self.settings.minimum_rating,
+            self.settings.closeness_bias,
         ) {
             Ok(locations) => {
-                println!("{:?}", locations);
                 self.locations = Some(locations);
                 self.locations_error = None;
             }
@@ -289,7 +293,19 @@ impl App {
 pub fn location_preview(ui: &mut egui::Ui, info: &common::LocationInfo) -> bool {
     ui.vertical(|ui| {
         ui.group(|ui| {
-            ui.heading("test");
+            ui.heading(&info.name);
+            ui.label(&info.address);
+            ui.label(format!("{} stars", info.rating));
+            ui.label(format!("{} miles away", info.distance.miles()));
+
+            if let Some(website) = info.website.as_ref() {
+                if ui.link(website).clicked() {
+                    if open::that(website).is_err() {
+                        println!("failed to open link");
+                    }
+                }
+            }
+
             ui.button("More Info").clicked()
         })
         .inner
@@ -298,5 +314,24 @@ pub fn location_preview(ui: &mut egui::Ui, info: &common::LocationInfo) -> bool 
 }
 
 pub fn location_expanded(ui: &mut egui::Ui, info: &common::LocationInfo) -> bool {
-    ui.button("Back").clicked()
+    let back = ui.button("Back").clicked();
+
+    ui.heading(&info.name);
+    ui.label(&info.address);
+    ui.label(format!("{} stars", info.rating));
+    ui.label(format!("{} miles away", info.distance.miles()));
+
+    if let Some(website) = info.website.as_ref() {
+        if ui.link(website).clicked() {
+            if open::that(website).is_err() {
+                println!("failed to open link");
+            }
+        }
+    }
+
+    if let Some(description) = info.description.as_ref() {
+        ui.label(description);
+    }
+
+    back
 }

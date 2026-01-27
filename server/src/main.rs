@@ -11,7 +11,7 @@ use tarpc::{
     server::{Channel, incoming::Incoming},
 };
 
-use crate::trip_advisor::{TripAdvisor, details};
+use crate::trip_advisor::TripAdvisor;
 
 mod trip_advisor;
 
