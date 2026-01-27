@@ -18,4 +18,5 @@ pub struct LocationInfo {
     pub website: Option<String>,
     pub rating: f64,
     pub address: String,
+    pub distance: Distance,
 }

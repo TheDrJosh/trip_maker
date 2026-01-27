@@ -79,26 +79,24 @@ impl TripMaker for Server {
                     .await
                     .map_err(|err| err.to_string())?;
 
-                if details
+                let rating = details
                     .rating
-                    .as_ref()
                     .map(|rating| rating.parse::<f64>().unwrap())
-                    .unwrap_or_default()
-                    >= min_rating
-                    && center.distance(&Location {
-                        latitude: details.latitude.parse().unwrap(),
-                        longitude: details.longitude.parse().unwrap(),
-                    }) < max_distance
-                {
+                    .unwrap_or_default();
+
+                let distance = center.distance(&Location {
+                    latitude: details.latitude.parse().unwrap(),
+                    longitude: details.longitude.parse().unwrap(),
+                });
+
+                if rating >= min_rating && distance < max_distance {
                     locations.push(LocationInfo {
                         name: details.name,
                         description: details.description,
                         website: details.website,
-                        rating: details
-                            .rating
-                            .map(|rating| rating.parse::<f64>().unwrap())
-                            .unwrap_or_default(),
+                        rating,
                         address: details.address_obj.address_string,
+                        distance,
                     });
                     break;
                 }
