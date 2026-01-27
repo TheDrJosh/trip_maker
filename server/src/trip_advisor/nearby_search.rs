@@ -38,19 +38,17 @@ pub enum RadiusUnit {
 }
 
 #[derive(Debug, serde::Deserialize)]
-#[serde(untagged)]
+#[serde(rename_all="lowercase")]
 pub enum Response {
-    Data(NearbySearch),
+    Data(Vec<Location>),
+    // #[serde(untagged)]
     Error(Error),
 }
 
-#[derive(Debug, serde::Deserialize)]
-pub struct NearbySearch {
-    pub data: Vec<Location>,
-}
+
 
 impl Response {
-    pub fn to_result(self) -> Result<NearbySearch, Error> {
+    pub fn to_result(self) -> Result<Vec<Location>, Error> {
         match self {
             Response::Data(data) => Ok(data),
             Response::Error(err) => Err(err),
