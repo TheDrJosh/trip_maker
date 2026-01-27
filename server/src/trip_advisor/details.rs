@@ -24,11 +24,10 @@ pub struct Params {
 // }
 
 #[derive(Debug, serde::Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(untagged)]
 pub enum Response {
-    Error(Error),
-    #[serde(untagged)]
     Data(Details),
+    Error(Error),
 }
 
 impl Response {
@@ -80,7 +79,7 @@ pub struct Details {
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Ancestor {
-    pub abbrv: String,
+    pub abbrv: Option<String>,
     pub level: String,
     pub name: String,
     pub location_id: String,
