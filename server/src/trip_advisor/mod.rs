@@ -198,7 +198,7 @@ pub struct Address {
     pub city: String,
     pub state: String,
     pub country: String,
-    pub postalcode: String,
+    pub postalcode: Option<String>,
     pub address_string: String,
 }
 
