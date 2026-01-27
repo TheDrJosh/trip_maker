@@ -104,6 +104,8 @@ impl Connection {
                     location,
                     max_distance,
                     number_to_generate,
+                    0.0,
+                    2.0,
                 )
                 .await
                 .map_err(|err| err.to_string())?

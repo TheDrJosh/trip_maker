@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Debug};
 
 use url::Url;
 
@@ -40,7 +40,15 @@ impl TripAdvisor {
             data: params,
         })?));
 
-        Ok(self.client.get(url).send().await?.json().await?)
+        Ok(self
+            .client
+            .get(url)
+            .send()
+            .await
+            .map_err(log_err)?
+            .json()
+            .await
+            .map_err(log_err)?)
     }
 
     pub async fn photos(
@@ -92,8 +100,21 @@ impl TripAdvisor {
             data: params,
         })?));
 
-        Ok(self.client.get(url).send().await?.json().await?)
+        Ok(self
+            .client
+            .get(url)
+            .send()
+            .await
+            .map_err(log_err)?
+            .json()
+            .await
+            .map_err(log_err)?)
     }
+}
+
+fn log_err<T: Debug>(err: T) -> T {
+    tracing::error!("{:?}", err);
+    err
 }
 
 #[derive(Debug, serde::Serialize)]
