@@ -160,7 +160,7 @@ pub struct WithApiKey<T> {
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Error {
-    #[serde(rename = "Message")]
+    #[serde(alias = "Message")]
     pub message: String,
     // #[serde(rename = "Type")]
     // pub err_type: String,

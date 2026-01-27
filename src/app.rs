@@ -274,6 +274,7 @@ impl App {
             self.settings.number_to_generate,
         ) {
             Ok(locations) => {
+                println!("{:?}", locations);
                 self.locations = Some(locations);
                 self.locations_error = None;
             }

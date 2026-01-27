@@ -43,7 +43,7 @@ impl TripMaker for Server {
         center: Location,
         max_distance: Distance,
         number_to_generate: usize,
-        min_rating: f32,
+        min_rating: f64,
         closeness: f64,
     ) -> Result<Vec<LocationInfo>, String> {
         let mut locations = Vec::with_capacity(number_to_generate);
@@ -51,40 +51,58 @@ impl TripMaker for Server {
         while locations.len() < number_to_generate {
             let rand_loc = get_rand_cord(&center, &max_distance, closeness);
 
-            let res = futures::future::join_all(
-                self.client
-                    .nearby_search(trip_advisor::nearby_search::Params {
-                        lat_long: rand_loc.to_string(),
-                        category: Some(trip_advisor::nearby_search::Category::Attractions),
-                        phone: None,
-                        address: None,
-                        radius: Some((max_distance.kilometers() * 2.0).to_string()),
-                        radius_unit: Some(trip_advisor::nearby_search::RadiusUnit::Kilometers),
-                        language: None,
-                    })
+            for location in self
+                .client
+                .nearby_search(trip_advisor::nearby_search::Params {
+                    lat_long: rand_loc.to_string(),
+                    category: Some(trip_advisor::nearby_search::Category::Attractions),
+                    phone: None,
+                    address: None,
+                    radius: Some((max_distance.kilometers() * 2.0).to_string()),
+                    radius_unit: Some(trip_advisor::nearby_search::RadiusUnit::Kilometers),
+                    language: None,
+                })
+                .await
+                .map_err(|err| err.to_string())?
+                .to_result()
+                .map_err(|err| err.message)?
+            {
+                let details = self
+                    .client
+                    .details(
+                        location.location_id,
+                        trip_advisor::details::Params {
+                            language: None,
+                            currency: None,
+                        },
+                    )
                     .await
-                    .map_err(|err| err.to_string())?
-                    .to_result()
-                    .map_err(|err| err.message)?
-                    .into_iter()
-                    .map(|loc| {
-                        self.client.details(
-                            loc.location_id,
-                            trip_advisor::details::Params {
-                                language: None,
-                                currency: None,
-                            },
-                        )
-                    }),
-            )
-            .await
-            .into_iter()
-            .filter_map(|res| res.ok())
-            .collect::<Vec<details::Details>>();
+                    .map_err(|err| err.to_string())?;
 
-            println!("{:?}", res);
-
-            locations.push(LocationInfo {});
+                if details
+                    .rating
+                    .as_ref()
+                    .map(|rating| rating.parse::<f64>().unwrap())
+                    .unwrap_or_default()
+                    >= min_rating
+                    && center.distance(&Location {
+                        latitude: details.latitude.parse().unwrap(),
+                        longitude: details.longitude.parse().unwrap(),
+                    }) < max_distance
+                {
+                    locations.push(LocationInfo {
+                        name: details.name,
+                        description: details.description,
+                        website: details.website,
+                        rating: details
+                            .rating
+                            .map(|rating| rating.parse::<f64>().unwrap())
+                            .unwrap_or_default(),
+                        address: details.address_obj.address_string,
+                    });
+                    break;
+                }
+            }
         }
 
         Ok(locations)
