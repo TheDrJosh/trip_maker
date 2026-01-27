@@ -73,7 +73,7 @@ pub struct Details {
     pub category: Option<Name>,
     pub subcategory: Vec<Name>,
     pub group: Option<Vec<Group>>,
-    pub styles: Vec<String>,
+    pub styles: Option<Vec<String>>,
     pub neighborhood_info: Vec<Name>,
     pub trip_types: Vec<TripType>,
     pub awards: Vec<Award>,
