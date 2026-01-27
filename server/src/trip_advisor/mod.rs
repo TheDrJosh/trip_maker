@@ -30,7 +30,7 @@ impl TripAdvisor {
         &self,
         location_id: String,
         params: details::Params,
-    ) -> anyhow::Result<details::Response> {
+    ) -> anyhow::Result<details::Details> {
         let mut url = Url::parse(&format!(
             "https://api.content.tripadvisor.com/api/v1/location/{}/details",
             location_id
@@ -126,10 +126,11 @@ pub struct WithApiKey<T> {
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Error {
+    #[serde(rename="Message")]
     pub message: String,
-    #[serde(rename = "type")]
-    pub err_type: String,
-    pub code: i32,
+    // #[serde(rename = "Type")]
+    // pub err_type: String,
+    // pub Code: i32,
 }
 
 #[derive(Debug, serde::Deserialize)]

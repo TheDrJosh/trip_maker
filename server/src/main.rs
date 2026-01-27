@@ -79,7 +79,7 @@ impl TripMaker for Server {
             )
             .await
             .into_iter()
-            .filter_map(|res| res.ok().map(|res| res.to_result().ok()).flatten())
+            .filter_map(|res| res.ok())
             .collect::<Vec<details::Details>>();
 
             println!("{:?}", res);
