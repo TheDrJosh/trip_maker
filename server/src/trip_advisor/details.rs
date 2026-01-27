@@ -45,7 +45,7 @@ pub struct Details {
     pub name: String,
     pub description: Option<String>,
     pub web_url: Option<String>,
-    pub addrss_obj: Address,
+    pub addrss_obj: Option<Address>,
     pub ancestors: Vec<Ancestor>,
     pub latitude: String,
     pub longitude: String,
@@ -129,7 +129,7 @@ pub struct DayTime {
 #[derive(Debug, serde::Deserialize)]
 pub struct Name {
     pub name: String,
-    pub localized_name: String,
+    pub localized_name: Option<String>,
 }
 
 #[derive(Debug, serde::Deserialize)]

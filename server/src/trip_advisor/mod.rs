@@ -110,7 +110,7 @@ impl TripAdvisor {
             .await
             .map_err(log_err)?;
 
-        tracing::info!("{}", text);
+        // tracing::info!("{}", text);
 
         Ok(serde_json::from_str(&text).map_err(log_err)?)
 
