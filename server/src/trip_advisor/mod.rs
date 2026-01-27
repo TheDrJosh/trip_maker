@@ -77,7 +77,13 @@ impl TripAdvisor {
             data: params,
         })?));
 
-        Ok(self.client.get(url).send().await?.json().await?)
+        let res_text = self.client.get(url).send().await?.text().await?;
+
+        tracing::info!("{}", res_text);
+
+        Ok(serde_json::from_str(&res_text)?)
+
+        // Ok(self.client.get(url).send().await?.json().await?)
     }
 }
 
