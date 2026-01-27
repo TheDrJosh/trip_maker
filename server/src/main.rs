@@ -66,6 +66,7 @@ impl TripMaker for Server {
                     .map_err(|err| err.to_string())?
                     .to_result()
                     .map_err(|err| err.message)?
+                    .data
                     .into_iter()
                     .map(|loc| {
                         self.client.details(
