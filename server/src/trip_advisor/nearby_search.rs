@@ -38,7 +38,7 @@ pub enum Response {
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Location {
-    pub location_id: i32,
+    pub location_id: String,
     pub name: String,
     pub distance: String,
     pub bearing: String,
