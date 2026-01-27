@@ -40,15 +40,32 @@ impl TripAdvisor {
             data: params,
         })?));
 
-        Ok(self
+        let text = self
             .client
             .get(url)
             .send()
             .await
             .map_err(log_err)?
-            .json()
+            .text()
             .await
-            .map_err(log_err)?)
+            .map_err(log_err)?;
+
+        // tracing::info!("{}", text);
+
+        Ok(serde_json::from_str(&text).map_err(|err| {
+            tracing::error!("{:?} | {}", err, text.replace("\n", ""));
+            err
+        })?)
+
+        // Ok(self
+        //     .client
+        //     .get(url)
+        //     .send()
+        //     .await
+        //     .map_err(log_err)?
+        //     .json()
+        //     .await
+        //     .map_err(log_err)?)
     }
 
     pub async fn photos(
@@ -112,7 +129,10 @@ impl TripAdvisor {
 
         // tracing::info!("{}", text);
 
-        Ok(serde_json::from_str(&text).map_err(log_err)?)
+        Ok(serde_json::from_str(&text).map_err(|err| {
+            tracing::error!("{:?} | {}", err, text.replace("\n", ""));
+            err
+        })?)
 
         // Ok(self
         //     .client
