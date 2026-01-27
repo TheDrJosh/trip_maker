@@ -57,20 +57,20 @@ pub struct Details {
     pub website: Option<String>,
     pub write_review: String,
     pub ranking_data: Option<RankingData>,
-    pub rating: String,
+    pub rating: Option<String>,
     pub rating_image_url: String,
     pub num_review: Option<String>,
-    pub review_rating_count: Value,
+    pub review_rating_count: Option<ReviewRatingCount>,
     pub photo_count: String,
     pub see_all_photos: String,
     pub prive_level: Option<String>,
-    pub hours: Hours,
+    pub hours: Option<Hours>,
     pub amenities: Vec<String>,
     pub features: Vec<String>,
     pub cuisine: Vec<Name>,
-    pub parent_brand: String,
-    pub brand: String,
-    pub category: Name,
+    pub parent_brand: Option<String>,
+    pub brand: Option<String>,
+    pub category: Option<Name>,
     pub subcategory: Vec<Name>,
     pub group: Vec<Group>,
     pub styles: Vec<String>,
@@ -96,19 +96,19 @@ pub struct RankingData {
     pub ranking: String,
 }
 
-// #[derive(Debug, serde::Deserialize)]
-// pub struct ReviewRatingCount {
-//     #[serde(rename = "1")]
-//     pub one: String,
-//     #[serde(rename = "2")]
-//     pub two: String,
-//     #[serde(rename = "3")]
-//     pub three: String,
-//     #[serde(rename = "4")]
-//     pub four: String,
-//     #[serde(rename = "5")]
-//     pub five: String,
-// }
+#[derive(Debug, serde::Deserialize)]
+pub struct ReviewRatingCount {
+    #[serde(rename = "1")]
+    pub one: String,
+    #[serde(rename = "2")]
+    pub two: String,
+    #[serde(rename = "3")]
+    pub three: String,
+    #[serde(rename = "4")]
+    pub four: String,
+    #[serde(rename = "5")]
+    pub five: String,
+}
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Hours {
@@ -124,7 +124,7 @@ pub struct Period {
 
 #[derive(Debug, serde::Deserialize)]
 pub struct DayTime {
-    pub day: String,
+    pub day: i32,
     pub time: String,
 }
 
