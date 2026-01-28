@@ -19,3 +19,4 @@ serde_url_params = "0.2.1"
 axum = "0.8.8"
 thiserror = "2.0.18"
 axum-htmx = { version = "0.8.1", features = ["auto-vary", "guards"] }
+maud = { version = "0.27.0", features = ["axum"] }

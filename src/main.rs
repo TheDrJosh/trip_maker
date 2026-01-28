@@ -1,9 +1,9 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
-use axum::{Router, routing};
-use axum_htmx::HxRequestGuardLayer;
+use axum::{Router, response::Html, routing};
 use clap::Parser;
 use dotenvy::dotenv;
+use maud::{PreEscaped, html};
 
 mod random_location;
 mod trip_advisor;
@@ -41,14 +41,37 @@ async fn main() {
 
     tracing::info!("Listening on {}", addr);
 
-    let app = Router::new()
-        .route("/", routing::get(root));
-        // .layer(HxRequestGuardLayer::default());
+    let app = Router::new().route("/", routing::get(root));
 
     axum::serve(listener, app).await.expect("Server Crashed");
 }
 
-async fn root() -> &'static str {
+async fn root() -> Html<PreEscaped<String>> {
     tracing::info!("Hello, World!");
-    "Hello, World!"
+
+    Html(layout(html!(
+        h1 {
+            "Hello, World!"
+        }
+    )))
+}
+
+fn layout(children: maud::PreEscaped<String>) -> maud::PreEscaped<String> {
+    html! {
+        (maud::DOCTYPE)
+        html {
+            head {
+                meta charset="UTF-8";
+                meta name="viewport" content="width=device-width, initial-scale=1.0";
+                link href="/output.css" rel="stylesheet";
+                title {
+                    "Trip Maker"
+                }
+            }
+            body {
+                (children)
+            }
+        }
+
+    }
 }
