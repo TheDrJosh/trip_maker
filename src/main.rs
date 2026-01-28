@@ -49,6 +49,6 @@ async fn main() {
 }
 
 async fn root() -> &'static str {
-    tracing::info("Hello, World!");
+    tracing::info!("Hello, World!");
     "Hello, World!"
 }
