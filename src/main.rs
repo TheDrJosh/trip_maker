@@ -57,12 +57,13 @@ async fn main() {
 
 #[axum::debug_handler]
 async fn root() -> Html<PreEscaped<String>> {
-    tracing::info!("Hello, World!");
-
     Html(layout(html!(
-        h1 {
-            "Hello, World!"
+        div class="w-full m-5 border-b border-zinc-500" {
+            h1 class="text-5xl text-amber-500 tracking-tight font-bold" {
+                "Trip Maker"
+            }
         }
+
     )))
 }
 
@@ -86,7 +87,7 @@ fn layout(children: maud::PreEscaped<String>) -> maud::PreEscaped<String> {
                     "Trip Maker"
                 }
             }
-            body {
+            body class="bg-zinc-600" {
                 (children)
             }
         }
