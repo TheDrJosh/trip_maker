@@ -3,13 +3,14 @@ use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use axum::{
     Router,
     body::Body,
-    http::{HeaderName, HeaderValue},
+    http::{HeaderMap, HeaderName, HeaderValue},
     response::{Html, Response},
     routing,
 };
 use clap::Parser;
 use dotenvy::dotenv;
 use maud::{PreEscaped, html};
+use reqwest::header::CONTENT_TYPE;
 
 mod random_location;
 mod trip_advisor;
@@ -63,15 +64,14 @@ async fn root() -> Html<PreEscaped<String>> {
         }
     )))
 }
-async fn styles() -> Response {
-    let mut res = Response::new(Body::from(include_str!("../public/output.css")));
+async fn styles() -> (HeaderMap, &'static str) {
+    tracing::info!("styles");
 
-    res.headers_mut().append(
-        HeaderName::from_static("Content-Type"),
-        HeaderValue::from_static("text/css"),
-    );
+    let mut header_map = HeaderMap::new();
 
-    res
+    header_map.append(CONTENT_TYPE, HeaderValue::from_static("text/css"));
+
+    (header_map, include_str!("../public/output.css"))
 }
 
 fn layout(children: maud::PreEscaped<String>) -> maud::PreEscaped<String> {
