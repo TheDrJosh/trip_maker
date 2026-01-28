@@ -55,6 +55,7 @@ async fn main() {
     axum::serve(listener, app).await.expect("Server Crashed");
 }
 
+#[axum::debug_handler]
 async fn root() -> Html<PreEscaped<String>> {
     tracing::info!("Hello, World!");
 
@@ -64,14 +65,13 @@ async fn root() -> Html<PreEscaped<String>> {
         }
     )))
 }
-async fn styles() -> (HeaderMap, &'static str) {
-    tracing::info!("styles");
 
-    let mut header_map = HeaderMap::new();
-
-    header_map.append(CONTENT_TYPE, HeaderValue::from_static("text/css"));
-
-    (header_map, include_str!("../public/output.css"))
+#[axum::debug_handler]
+async fn styles() -> ([(HeaderName, HeaderValue); 1], &'static str) {
+    (
+        [(CONTENT_TYPE, HeaderValue::from_static("text/css"))],
+        include_str!("../public/output.css"),
+    )
 }
 
 fn layout(children: maud::PreEscaped<String>) -> maud::PreEscaped<String> {
