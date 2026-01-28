@@ -42,12 +42,13 @@ async fn main() {
     tracing::info!("Listening on {}", addr);
 
     let app = Router::new()
-        .route("/", routing::get(root))
-        .layer(HxRequestGuardLayer::default());
+        .route("/", routing::get(root));
+        // .layer(HxRequestGuardLayer::default());
 
     axum::serve(listener, app).await.expect("Server Crashed");
 }
 
 async fn root() -> &'static str {
+    tracing::info("Hello, World!");
     "Hello, World!"
 }
