@@ -16,6 +16,18 @@ pub struct TripAdvisor {
 
 static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
 
+#[derive(Debug, thiserror::Error)]
+pub enum TripAdvisorError {
+    #[error("{0}")]
+    Url(#[from] url::ParseError),
+    #[error("{0}")]
+    UrlParam(#[from] serde_url_params::Error),
+    #[error("{0}")]
+    Reqwest(#[from] reqwest::Error),
+    #[error("{0}")]
+    JsonParse(#[from] serde_json::Error),
+}
+
 impl TripAdvisor {
     pub fn new(api_key: String) -> Self {
         let client = reqwest::Client::builder()
@@ -30,7 +42,7 @@ impl TripAdvisor {
         &self,
         location_id: String,
         params: details::Params,
-    ) -> anyhow::Result<details::Details> {
+    ) -> Result<details::Details, TripAdvisorError> {
         let mut url = Url::parse(&format!(
             "https://api.content.tripadvisor.com/api/v1/location/{}/details",
             location_id
@@ -50,29 +62,17 @@ impl TripAdvisor {
             .await
             .map_err(log_err)?;
 
-        // tracing::info!("{}", text);
-
         Ok(serde_json::from_str(&text).map_err(|err| {
             tracing::error!("{:?} | {}", err, text.replace("\n", ""));
             err
         })?)
-
-        // Ok(self
-        //     .client
-        //     .get(url)
-        //     .send()
-        //     .await
-        //     .map_err(log_err)?
-        //     .json()
-        //     .await
-        //     .map_err(log_err)?)
     }
 
     pub async fn photos(
         &self,
         location_id: String,
         params: photos::Params,
-    ) -> anyhow::Result<photos::Response> {
+    ) -> Result<photos::Response, TripAdvisorError> {
         let mut url = Url::parse(&format!(
             "https://api.content.tripadvisor.com/api/v1/location/{}/photos",
             location_id
@@ -82,14 +82,27 @@ impl TripAdvisor {
             data: params,
         })?));
 
-        Ok(self.client.get(url).send().await?.json().await?)
+        let text = self
+            .client
+            .get(url)
+            .send()
+            .await
+            .map_err(log_err)?
+            .text()
+            .await
+            .map_err(log_err)?;
+
+        Ok(serde_json::from_str(&text).map_err(|err| {
+            tracing::error!("{:?} | {}", err, text.replace("\n", ""));
+            err
+        })?)
     }
 
     pub async fn reviews(
         &self,
         location_id: String,
         params: reviews::Params,
-    ) -> anyhow::Result<reviews::Response> {
+    ) -> Result<reviews::Response, TripAdvisorError> {
         let mut url = Url::parse(&format!(
             "https://api.content.tripadvisor.com/api/v1/location/{}/reviews",
             location_id
@@ -99,17 +112,30 @@ impl TripAdvisor {
             data: params,
         })?));
 
-        Ok(self.client.get(url).send().await?.json().await?)
+        let text = self
+            .client
+            .get(url)
+            .send()
+            .await
+            .map_err(log_err)?
+            .text()
+            .await
+            .map_err(log_err)?;
+
+        Ok(serde_json::from_str(&text).map_err(|err| {
+            tracing::error!("{:?} | {}", err, text.replace("\n", ""));
+            err
+        })?)
     }
 
-    pub async fn search(&self) -> anyhow::Result<()> {
-        todo!()
-    }
+    // pub async fn search(&self) -> anyhow::Result<()> {
+    //     todo!()
+    // }
 
     pub async fn nearby_search(
         &self,
         params: nearby_search::Params,
-    ) -> anyhow::Result<nearby_search::Response> {
+    ) -> Result<nearby_search::Response, TripAdvisorError> {
         let mut url =
             Url::parse("https://api.content.tripadvisor.com/api/v1/location/nearby_search")?;
         url.set_query(Some(&serde_url_params::to_string(&WithApiKey {
@@ -127,22 +153,10 @@ impl TripAdvisor {
             .await
             .map_err(log_err)?;
 
-        // tracing::info!("{}", text);
-
         Ok(serde_json::from_str(&text).map_err(|err| {
             tracing::error!("{:?} | {}", err, text.replace("\n", ""));
             err
         })?)
-
-        // Ok(self
-        //     .client
-        //     .get(url)
-        //     .send()
-        //     .await
-        //     .map_err(log_err)?
-        //     .json()
-        //     .await
-        //     .map_err(log_err)?)
     }
 }
 
@@ -195,7 +209,7 @@ pub struct UserLocation {
 pub struct Address {
     pub street1: Option<String>,
     pub street2: Option<String>,
-    pub city: String,
+    pub city: Option<String>,
     pub state: String,
     pub country: String,
     pub postalcode: Option<String>,

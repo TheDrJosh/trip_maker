@@ -1,31 +1,53 @@
-use std::time::Duration;
+use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
-use tokio::runtime::Runtime;
+use axum::{Router, routing};
+use axum_htmx::HxRequestGuardLayer;
+use clap::Parser;
+use dotenvy::dotenv;
 
-use crate::app::App;
+mod random_location;
+mod trip_advisor;
 
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    #[arg(long, env, default_value = "false")]
+    host: bool,
+    #[arg(long, env, default_value = "3000")]
+    port: u16,
 
-mod app;
-mod connection;
+    #[arg(long, env)]
+    api_key: String,
+}
 
-fn main() {
-    let rt = Runtime::new().expect("Unable to create Runtime");
+#[tokio::main]
+async fn main() {
+    tracing_subscriber::fmt().init();
+    _ = dotenv();
+    let args = Args::parse();
 
-    let _enter = rt.enter();
+    let addr = SocketAddr::new(
+        if args.host {
+            IpAddr::V4(Ipv4Addr::UNSPECIFIED)
+        } else {
+            IpAddr::V4(Ipv4Addr::LOCALHOST)
+        },
+        args.port,
+    );
 
-    std::thread::spawn(move || {
-        rt.block_on(async {
-            loop {
-                tokio::time::sleep(Duration::from_secs(3600)).await;
-            }
-        })
-    });
+    let listener = tokio::net::TcpListener::bind(addr)
+        .await
+        .expect(&format!("unable to listen on {}", addr));
 
-    let native_options = eframe::NativeOptions::default();
-    eframe::run_native(
-        "Trip Maker",
-        native_options,
-        Box::new(|cc| Ok(Box::new(App::new(cc)))),
-    )
-    .expect("failed to launch app")
+    tracing::info!("Listening on {}", addr);
+
+    let app = Router::new()
+        .route("/", routing::get(root))
+        .layer(HxRequestGuardLayer::default());
+
+    axum::serve(listener, app).await.expect("Server Crashed");
+}
+
+async fn root() -> &'static str {
+    "Hello, World!"
 }
