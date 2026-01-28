@@ -1,6 +1,12 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
-use axum::{Router, response::Html, routing};
+use axum::{
+    Router,
+    body::Body,
+    http::{HeaderName, HeaderValue},
+    response::{Html, Response},
+    routing,
+};
 use clap::Parser;
 use dotenvy::dotenv;
 use maud::{PreEscaped, html};
@@ -41,7 +47,9 @@ async fn main() {
 
     tracing::info!("Listening on {}", addr);
 
-    let app = Router::new().route("/", routing::get(root));
+    let app = Router::new()
+        .route("/", routing::get(root))
+        .route("/styles.css", routing::get(styles));
 
     axum::serve(listener, app).await.expect("Server Crashed");
 }
@@ -55,6 +63,16 @@ async fn root() -> Html<PreEscaped<String>> {
         }
     )))
 }
+async fn styles() -> Response {
+    let mut res = Response::new(Body::from(include_str!("../public/output.css")));
+
+    res.headers_mut().append(
+        HeaderName::from_static("Content-Type"),
+        HeaderValue::from_static("text/css"),
+    );
+
+    res
+}
 
 fn layout(children: maud::PreEscaped<String>) -> maud::PreEscaped<String> {
     html! {
@@ -63,7 +81,7 @@ fn layout(children: maud::PreEscaped<String>) -> maud::PreEscaped<String> {
             head {
                 meta charset="UTF-8";
                 meta name="viewport" content="width=device-width, initial-scale=1.0";
-                link href="/output.css" rel="stylesheet";
+                link href="/styles.css" rel="stylesheet";
                 title {
                     "Trip Maker"
                 }
