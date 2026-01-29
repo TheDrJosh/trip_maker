@@ -31,13 +31,13 @@ async fn page() -> PreEscaped<String> {
                                 label for="latitude" {
                                     "Latitude"
                                 }
-                                input name="latitude" id="latitude" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0";
+                                input name="latitude" id="latitude" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" step="0.1" inputmode="decimal";
                             }
                             div class="flex flex-row gap-2 items-center" {
                                 label for="longitude" {
                                     "Longitude"
                                 }
-                                input name="longitude" id="longitude" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0";
+                                input name="longitude" id="longitude" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" step="0.1" inputmode="decimal";
                             }
                             button type="button" class="bg-zinc-700 px-2 py-1 rounded-lg hover:bg-zinc-800 self-start" onclick="setPosition()" {
                                 "Current Position"
@@ -80,7 +80,7 @@ async fn page() -> PreEscaped<String> {
                                 label for="max_distance" {
                                     "Max Distance"
                                 }
-                                input name="max_distance" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="10" min="0";
+                                input name="max_distance" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="10" min="0" inputmode="decimal";
                             }
                         }
                         div class="flex flex-col gap-2 flex-1" {
@@ -88,19 +88,19 @@ async fn page() -> PreEscaped<String> {
                                 label for="closeness_bias" {
                                     "Closeness Bias"
                                 }
-                                input name="closeness_bias" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="1" min="0.2" max="5" step="0.1";
+                                input name="closeness_bias" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="1" min="0.2" max="5" step="0.1" inputmode="decimal";
                             }
                             div class="flex flex-row gap-2 items-center" {
                                 label for="minimum_rating" {
                                     "Minimum Rating"
                                 }
-                                input name="minimum_rating" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" min="0" max="5" step="0.1";
+                                input name="minimum_rating" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" min="0" max="5" step="0.1" inputmode="decimal";
                             }
                             div class="flex flex-row gap-2 items-center" {
                                 label for="number_to_generate" {
                                     "Number To Generate"
                                 }
-                                input name="number_to_generate" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="5" min="0" max="15";
+                                input name="number_to_generate" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="5" step="1" min="0" max="15" inputmode="numeric";
                             }
                         }
                     }
