@@ -246,7 +246,7 @@ fn center_settings(settings_form: &SettingsForm, validations: &SettingsFormValid
                 input name="latitude" id="latitude" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value=(settings_form.latitude);
             }
             (error_text(&validations.latitude))
-            button type="button" class="bg-zinc-700 px-2 py-1 rounded-lg hover:bg-zinc-800 self-start" onclick="navigator.geolocation.getCurrentPosition((data) => {document.getElementById(\"longitude\").value = data.longitude; document.getElementById(\"latitude\").value = data.latitude;}, (err) => {document.getElementById(\"test\").innerHTML = err.code + \" | \" + err.message}, {enableHighAccuracy: true});" {
+            button type="button" class="bg-zinc-700 px-2 py-1 rounded-lg hover:bg-zinc-800 self-start" onclick="navigator.geolocation.getCurrentPosition((data) => {document.getElementById(\"test\").innerHTML = data.longitude + \", \" + data.latitude;}, (err) => {document.getElementById(\"test\").innerHTML = err.code + \" | \" + err.message}, {enableHighAccuracy: true});" {
                 "Current Position"
             }
             p id="test" {}
