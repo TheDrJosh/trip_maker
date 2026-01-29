@@ -3,10 +3,10 @@ use axum_htmx::HxRequestGuardLayer;
 
 use crate::state::State;
 
-pub mod settings_form;
+pub mod generate;
 
 pub fn routes() -> Router<State> {
     Router::new()
-        .route("/settings-form", routing::get(settings_form::page))
+        .route("/generate",  routing::post(generate::submit))
         .layer(HxRequestGuardLayer::default())
 }
