@@ -1,19 +1,15 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
-use axum::{
-    Router,
-    body::Body,
-    http::{HeaderMap, HeaderName, HeaderValue},
-    response::{Html, Response},
-    routing,
-};
 use clap::Parser;
 use dotenvy::dotenv;
-use maud::{PreEscaped, html};
-use reqwest::header::CONTENT_TYPE;
+use tower_livereload::LiveReloadLayer;
 
-mod random_location;
-mod trip_advisor;
+use crate::state::State;
+
+// mod random_location;
+mod routes;
+mod state;
+// mod trip_advisor;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -44,53 +40,14 @@ async fn main() {
 
     let listener = tokio::net::TcpListener::bind(addr)
         .await
-        .expect(&format!("unable to listen on {}", addr));
+        .unwrap_or_else(|_| panic!("unable to listen on {}", addr));
 
     tracing::info!("Listening on {}", addr);
 
-    let app = Router::new()
-        .route("/", routing::get(root))
-        .route("/styles.css", routing::get(styles));
+    let app = routes::routes().with_state(State {});
+
+    #[cfg(debug_assertions)]
+    let app = app.layer(LiveReloadLayer::new());
 
     axum::serve(listener, app).await.expect("Server Crashed");
-}
-
-#[axum::debug_handler]
-async fn root() -> Html<PreEscaped<String>> {
-    Html(layout(html!(
-        div class="w-full m-5 border-b border-zinc-500" {
-            h1 class="text-5xl text-amber-500 tracking-tight font-bold" {
-                "Trip Maker"
-            }
-        }
-
-    )))
-}
-
-#[axum::debug_handler]
-async fn styles() -> ([(HeaderName, HeaderValue); 1], &'static str) {
-    (
-        [(CONTENT_TYPE, HeaderValue::from_static("text/css"))],
-        include_str!("../public/output.css"),
-    )
-}
-
-fn layout(children: maud::PreEscaped<String>) -> maud::PreEscaped<String> {
-    html! {
-        (maud::DOCTYPE)
-        html {
-            head {
-                meta charset="UTF-8";
-                meta name="viewport" content="width=device-width, initial-scale=1.0";
-                link href="/styles.css" rel="stylesheet";
-                title {
-                    "Trip Maker"
-                }
-            }
-            body class="bg-zinc-600" {
-                (children)
-            }
-        }
-
-    }
 }
