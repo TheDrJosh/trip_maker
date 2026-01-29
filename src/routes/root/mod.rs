@@ -31,13 +31,13 @@ async fn page() -> PreEscaped<String> {
                                 label for="latitude" {
                                     "Latitude"
                                 }
-                                input name="latitude" id="latitude" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" step="0.1" inputmode="decimal";
+                                input name="latitude" id="latitude" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" step="0.0000000000000001" inputmode="decimal";
                             }
                             div class="flex flex-row gap-2 items-center" {
                                 label for="longitude" {
                                     "Longitude"
                                 }
-                                input name="longitude" id="longitude" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" step="0.1" inputmode="decimal";
+                                input name="longitude" id="longitude" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" step="0.0000000000000001" inputmode="decimal";
                             }
                             button type="button" class="bg-zinc-700 px-2 py-1 rounded-lg hover:bg-zinc-800 self-start" onclick="setPosition()" {
                                 "Current Position"
