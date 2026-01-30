@@ -15,7 +15,9 @@
     --color-zinc-600: oklch(44.2% 0.017 285.786);
     --color-zinc-700: oklch(37% 0.013 285.805);
     --color-zinc-800: oklch(27.4% 0.006 286.033);
+    --color-black: #000;
     --spacing: 0.25rem;
+    --container-lg: 32rem;
     --text-lg: 1.125rem;
     --text-lg--line-height: calc(1.75 / 1.125);
     --text-2xl: 1.5rem;
@@ -179,17 +181,35 @@
   }
 }
 @layer utilities {
+  .fixed {
+    position: fixed;
+  }
   .static {
     position: static;
   }
+  .inset-0 {
+    inset: calc(var(--spacing) * 0);
+  }
   .m-2 {
     margin: calc(var(--spacing) * 2);
+  }
+  .mt-4 {
+    margin-top: calc(var(--spacing) * 4);
+  }
+  .mt-auto {
+    margin-top: auto;
+  }
+  .mb-4 {
+    margin-bottom: calc(var(--spacing) * 4);
   }
   .flex {
     display: flex;
   }
   .table {
     display: table;
+  }
+  .w-64 {
+    width: calc(var(--spacing) * 64);
   }
   .w-full {
     width: 100%;
@@ -199,6 +219,9 @@
   }
   .max-w-96 {
     max-width: calc(var(--spacing) * 96);
+  }
+  .max-w-lg {
+    max-width: var(--container-lg);
   }
   .min-w-32 {
     min-width: calc(var(--spacing) * 32);
@@ -226,6 +249,9 @@
   }
   .items-center {
     align-items: center;
+  }
+  .justify-center {
+    justify-content: center;
   }
   .gap-2 {
     gap: calc(var(--spacing) * 2);
@@ -256,11 +282,17 @@
   .border-zinc-500 {
     border-color: var(--color-zinc-500);
   }
+  .bg-black {
+    background-color: var(--color-black);
+  }
   .bg-zinc-600 {
     background-color: var(--color-zinc-600);
   }
   .bg-zinc-700 {
     background-color: var(--color-zinc-700);
+  }
+  .bg-zinc-800 {
+    background-color: var(--color-zinc-800);
   }
   .p-2 {
     padding: calc(var(--spacing) * 2);
@@ -305,6 +337,9 @@
   .tracking-tight {
     --tw-tracking: var(--tracking-tight);
     letter-spacing: var(--tracking-tight);
+  }
+  .text-ellipsis {
+    text-overflow: ellipsis;
   }
   .text-amber-500 {
     color: var(--color-amber-500);

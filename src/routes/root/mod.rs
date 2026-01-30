@@ -48,9 +48,9 @@ async fn page() -> PreEscaped<String> {
                                 "Current Position"
                             }
                             span class="text-red-500" id="set-position-error" {}
-                            button type="button" class="bg-zinc-700 px-2 py-1 rounded-lg hover:bg-zinc-800 self-start" {
-                                "Set Address"
-                            }
+                            // button type="button" class="bg-zinc-700 px-2 py-1 rounded-lg hover:bg-zinc-800 self-start" {
+                            //     "Set Address"
+                            // }
                         }
                         div class="flex flex-col gap-2 flex-1" {
                             div class="flex flex-row gap-2 items-center" {
