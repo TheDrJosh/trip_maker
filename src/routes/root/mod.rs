@@ -24,7 +24,7 @@ async fn page() -> PreEscaped<String> {
                 (env!("CARGO_PKG_VERSION"))
             }
             a href="https://github.com/TheDrJosh/trip_maker" class="text-blue-500 hover:underline" {
-                "https://github.com/TheDrJosh/trip_maker"
+                "Github Repository"
             }
         }
         div class="w-full p-4" {
