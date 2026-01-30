@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use axum::{
     Router,
     http::{HeaderName, HeaderValue},
@@ -6,11 +8,11 @@ use axum::{
 use maud::html;
 use reqwest::header::CONTENT_TYPE;
 
-use crate::state::State;
+use crate::state::ServerState;
 
 pub mod root;
 
-pub fn routes() -> Router<State> {
+pub fn routes() -> Router<Arc<ServerState>> {
     Router::new()
         .merge(root::routes())
         .route("/styles.css", routing::get(styles))

@@ -172,13 +172,14 @@ pub struct WithApiKey<T> {
     data: T,
 }
 
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, serde::Deserialize, thiserror::Error)]
+#[error("TripAdvisor API error: Code: {code:?} Type: {err_type:?} Message: {message}")]
 pub struct Error {
     #[serde(alias = "Message")]
     pub message: String,
-    // #[serde(rename = "Type")]
-    // pub err_type: String,
-    // pub code: i32,
+    #[serde(rename = "type", alias = "Type")]
+    pub err_type: Option<String>,
+    pub code: Option<String>,
 }
 
 #[derive(Debug, serde::Deserialize)]

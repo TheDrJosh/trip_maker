@@ -1,3 +1,5 @@
+use crate::trip_advisor::TripAdvisor;
 
-#[derive(Debug, Clone)]
-pub struct State {}
+pub struct ServerState {
+    pub client: TripAdvisor,
+}

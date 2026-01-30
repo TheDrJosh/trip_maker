@@ -35,7 +35,7 @@ pub async fn get_random_location(
     number_to_generate: usize,
     min_rating: f64,
     closeness: f64,
-) -> Result<Vec<LocationInfo>, String> {
+) -> Result<Vec<LocationInfo>, GetRandomLocationError> {
     let mut locations = Vec::with_capacity(number_to_generate);
 
     while locations.len() < number_to_generate {
@@ -51,10 +51,8 @@ pub async fn get_random_location(
                 radius_unit: Some(trip_advisor::nearby_search::RadiusUnit::Kilometers),
                 language: None,
             })
-            .await
-            .map_err(|err| err.to_string())?
-            .to_result()
-            .map_err(|err| err.message)?
+            .await?
+            .to_result()?
         {
             let details = client
                 .details(
@@ -64,8 +62,7 @@ pub async fn get_random_location(
                         currency: None,
                     },
                 )
-                .await
-                .map_err(|err| err.to_string())?;
+                .await?;
 
             let rating = details
                 .rating
@@ -92,4 +89,12 @@ pub async fn get_random_location(
     }
 
     Ok(locations)
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum GetRandomLocationError {
+    #[error("TripAdvisor API error: {0}")]
+    TripAdvisorClientError(#[from] trip_advisor::TripAdvisorError),
+    #[error("TripAdvisor API error: {0}")]
+    TripAdvisorServerError(#[from] trip_advisor::Error),
 }

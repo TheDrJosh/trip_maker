@@ -1,15 +1,15 @@
-use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::{net::{IpAddr, Ipv4Addr, SocketAddr}, sync::Arc};
 
 use clap::Parser;
 use dotenvy::dotenv;
 use tower_livereload::LiveReloadLayer;
 
-use crate::state::State;
+use crate::state::ServerState;
 
-// mod random_location;
+mod random_location;
 mod routes;
 mod state;
-// mod trip_advisor;
+mod trip_advisor;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -44,7 +44,9 @@ async fn main() {
 
     tracing::info!("Listening on {}", addr);
 
-    let app = routes::routes().with_state(State {});
+    let app = routes::routes().with_state(Arc::new(ServerState {
+        client: trip_advisor::TripAdvisor::new(args.api_key),
+    }));
 
     #[cfg(debug_assertions)]
     let app = app.layer(LiveReloadLayer::new());

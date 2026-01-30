@@ -1,11 +1,13 @@
+use std::sync::Arc;
+
 use axum::{Router, routing};
 use maud::{PreEscaped, html};
 
-use crate::{routes::layout, state::State};
+use crate::{routes::layout, state::ServerState};
 
 pub mod partials;
 
-pub fn routes() -> Router<State> {
+pub fn routes() -> Router<Arc<ServerState>> {
     Router::new()
         .route("/", routing::get(page))
         .nest("/partial", partials::routes())
