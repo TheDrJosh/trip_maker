@@ -86,8 +86,8 @@ fn location_card(location: &random_location::LocationInfo, distance_unit: Distan
                 "More Info"
             }
 
-            div class="fixed inset-0 bg-black opacity-50 w-full h-full flex items-center justify-center" x-show="open" "x-on:click"="open = false" x-cloak {
-                div class="bg-zinc-800 opacity-100 rounded-xl p-4 max-w-lg w-full" {
+            div class="fixed inset-0 bg-black/50 w-full h-full flex items-center justify-center" x-show="open" x-cloak {
+                div class="bg-zinc-800rounded-xl p-4 max-w-lg w-full" "x-on:click.outside"="open = false" {
                     h2 class="text-2xl font-bold mb-4" { ( &location.name ) }
                     p {
                         "Rating: " ( location.rating )
