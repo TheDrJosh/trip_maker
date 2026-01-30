@@ -52,7 +52,7 @@ pub async fn get_random_location(
                 language: None,
             })
             .await?
-            .to_result()?
+            .into_result()?
         {
             let details = client
                 .details(
@@ -62,7 +62,8 @@ pub async fn get_random_location(
                         currency: None,
                     },
                 )
-                .await?;
+                .await?
+                .into_result()?;
 
             let rating = details
                 .rating

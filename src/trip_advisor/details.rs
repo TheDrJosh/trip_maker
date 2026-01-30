@@ -24,22 +24,23 @@ pub struct Params {
 // }
 
 #[derive(Debug, serde::Deserialize)]
-#[serde(untagged)]
 pub enum Response {
-    Data(Details),
     Error(Error),
+    #[serde(untagged)]
+    Data(Box<Details>),
 }
 
 impl Response {
-    pub fn to_result(self) -> Result<Details, Error> {
+    pub fn into_result(self) -> Result<Details, Error> {
         match self {
-            Response::Data(data) => Ok(data),
+            Response::Data(data) => Ok(*data),
             Response::Error(err) => Err(err),
         }
     }
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct Details {
     pub location_id: String,
     pub name: String,
@@ -78,6 +79,7 @@ pub struct Details {
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct Ancestor {
     pub abbrv: Option<String>,
     pub level: String,
@@ -86,6 +88,7 @@ pub struct Ancestor {
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct RankingData {
     pub geo_location_id: String,
     pub ranking_string: String,
@@ -95,6 +98,7 @@ pub struct RankingData {
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct ReviewRatingCount {
     #[serde(rename = "1")]
     pub one: String,
@@ -109,30 +113,35 @@ pub struct ReviewRatingCount {
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct Hours {
     pub periods: Vec<Period>,
     pub weekday_text: Vec<String>,
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct Period {
     pub open: DayTime,
     pub close: DayTime,
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct DayTime {
     pub day: i32,
     pub time: String,
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct Name {
     pub name: String,
     pub localized_name: Option<String>,
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct Group {
     #[serde(flatten)]
     pub name: Name,
@@ -140,6 +149,7 @@ pub struct Group {
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct TripType {
     #[serde(flatten)]
     pub name: Name,
@@ -147,6 +157,7 @@ pub struct TripType {
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct Award {
     pub award_type: String,
     pub year: String,
@@ -156,6 +167,7 @@ pub struct Award {
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct AwardImage {
     tiny: String,
     small: String,

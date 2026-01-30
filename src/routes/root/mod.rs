@@ -101,7 +101,7 @@ async fn page() -> PreEscaped<String> {
                                 label for="minimum_rating" {
                                     "Minimum Rating"
                                 }
-                                input id="minimum_rating" name="minimum_rating" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" inputmode="decimal" hx-get="/partial/check" hx-target="#minimum-rating-error" hx-trigger="keyup changed" hx-swap="innerHTML";
+                                input id="minimum_rating" name="minimum_rating" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="2.5" inputmode="decimal" hx-get="/partial/check" hx-target="#minimum-rating-error" hx-trigger="keyup changed" hx-swap="innerHTML";
                             }
                             span class="text-red-500" id="minimum-rating-error" {}
                             div class="flex flex-row gap-2 items-center" {
@@ -120,14 +120,11 @@ async fn page() -> PreEscaped<String> {
                     }
                     img src="/tail-spin.svg" class="w-6 h-6 htmx-indicator" id="loading-indicator"  {};
                 }
-                
             }
             script {
                 (PreEscaped(include_str!("set_location.js")))
             }
         }
-        div id="generated" class="flex flex-row flex-wrap gap-4 p-4" {
-
-        }
+        div id="generated" class="flex flex-row flex-wrap gap-4 p-4" {}
     })
 }

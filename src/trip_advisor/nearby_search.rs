@@ -20,6 +20,7 @@ pub struct Params {
 
 #[derive(Debug, serde::Serialize)]
 #[serde(rename_all = "lowercase")]
+#[allow(dead_code)]
 pub enum Category {
     Hotels,
     Attractions,
@@ -28,6 +29,7 @@ pub enum Category {
 }
 
 #[derive(Debug, serde::Serialize)]
+#[allow(dead_code)]
 pub enum RadiusUnit {
     #[serde(rename = "km")]
     Kilometers,
@@ -48,7 +50,7 @@ pub enum Response {
 
 
 impl Response {
-    pub fn to_result(self) -> Result<Vec<Location>, Error> {
+    pub fn into_result(self) -> Result<Vec<Location>, Error> {
         match self {
             Response::Data(data) => Ok(data),
             Response::Error(err) => Err(err),
@@ -57,6 +59,7 @@ impl Response {
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct Location {
     pub location_id: String,
     pub name: String,

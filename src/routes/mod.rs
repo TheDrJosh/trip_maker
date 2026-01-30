@@ -1,9 +1,8 @@
-use core::str;
 use std::sync::Arc;
 
 use axum::{
     Router,
-    http::{HeaderName, HeaderValue},
+    http::HeaderValue,
     routing,
 };
 use maud::html;

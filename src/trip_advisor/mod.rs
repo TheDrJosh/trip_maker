@@ -1,12 +1,12 @@
-use std::{collections::HashMap, fmt::Debug};
+use std::fmt::Debug;
 
 use url::Url;
 
 pub mod details;
 pub mod nearby_search;
-pub mod photos;
-pub mod reviews;
-pub mod search;
+// pub mod photos;
+// pub mod reviews;
+// pub mod search;
 
 #[derive(Clone)]
 pub struct TripAdvisor {
@@ -42,7 +42,7 @@ impl TripAdvisor {
         &self,
         location_id: String,
         params: details::Params,
-    ) -> Result<details::Details, TripAdvisorError> {
+    ) -> Result<details::Response, TripAdvisorError> {
         let mut url = Url::parse(&format!(
             "https://api.content.tripadvisor.com/api/v1/location/{}/details",
             location_id
@@ -68,65 +68,65 @@ impl TripAdvisor {
         })?)
     }
 
-    pub async fn photos(
-        &self,
-        location_id: String,
-        params: photos::Params,
-    ) -> Result<photos::Response, TripAdvisorError> {
-        let mut url = Url::parse(&format!(
-            "https://api.content.tripadvisor.com/api/v1/location/{}/photos",
-            location_id
-        ))?;
-        url.set_query(Some(&serde_url_params::to_string(&WithApiKey {
-            key: self.api_key.clone(),
-            data: params,
-        })?));
+    // pub async fn photos(
+    //     &self,
+    //     location_id: String,
+    //     params: photos::Params,
+    // ) -> Result<photos::Response, TripAdvisorError> {
+    //     let mut url = Url::parse(&format!(
+    //         "https://api.content.tripadvisor.com/api/v1/location/{}/photos",
+    //         location_id
+    //     ))?;
+    //     url.set_query(Some(&serde_url_params::to_string(&WithApiKey {
+    //         key: self.api_key.clone(),
+    //         data: params,
+    //     })?));
 
-        let text = self
-            .client
-            .get(url)
-            .send()
-            .await
-            .map_err(log_err)?
-            .text()
-            .await
-            .map_err(log_err)?;
+    //     let text = self
+    //         .client
+    //         .get(url)
+    //         .send()
+    //         .await
+    //         .map_err(log_err)?
+    //         .text()
+    //         .await
+    //         .map_err(log_err)?;
 
-        Ok(serde_json::from_str(&text).map_err(|err| {
-            tracing::error!("{:?} | {}", err, text.replace("\n", ""));
-            err
-        })?)
-    }
+    //     Ok(serde_json::from_str(&text).map_err(|err| {
+    //         tracing::error!("{:?} | {}", err, text.replace("\n", ""));
+    //         err
+    //     })?)
+    // }
 
-    pub async fn reviews(
-        &self,
-        location_id: String,
-        params: reviews::Params,
-    ) -> Result<reviews::Response, TripAdvisorError> {
-        let mut url = Url::parse(&format!(
-            "https://api.content.tripadvisor.com/api/v1/location/{}/reviews",
-            location_id
-        ))?;
-        url.set_query(Some(&serde_url_params::to_string(&WithApiKey {
-            key: self.api_key.clone(),
-            data: params,
-        })?));
+    // pub async fn reviews(
+    //     &self,
+    //     location_id: String,
+    //     params: reviews::Params,
+    // ) -> Result<reviews::Response, TripAdvisorError> {
+    //     let mut url = Url::parse(&format!(
+    //         "https://api.content.tripadvisor.com/api/v1/location/{}/reviews",
+    //         location_id
+    //     ))?;
+    //     url.set_query(Some(&serde_url_params::to_string(&WithApiKey {
+    //         key: self.api_key.clone(),
+    //         data: params,
+    //     })?));
 
-        let text = self
-            .client
-            .get(url)
-            .send()
-            .await
-            .map_err(log_err)?
-            .text()
-            .await
-            .map_err(log_err)?;
+    //     let text = self
+    //         .client
+    //         .get(url)
+    //         .send()
+    //         .await
+    //         .map_err(log_err)?
+    //         .text()
+    //         .await
+    //         .map_err(log_err)?;
 
-        Ok(serde_json::from_str(&text).map_err(|err| {
-            tracing::error!("{:?} | {}", err, text.replace("\n", ""));
-            err
-        })?)
-    }
+    //     Ok(serde_json::from_str(&text).map_err(|err| {
+    //         tracing::error!("{:?} | {}", err, text.replace("\n", ""));
+    //         err
+    //     })?)
+    // }
 
     // pub async fn search(&self) -> anyhow::Result<()> {
     //     todo!()
@@ -182,31 +182,32 @@ pub struct Error {
     pub code: Option<String>,
 }
 
-#[derive(Debug, serde::Deserialize)]
-pub struct Paging {
-    pub next: String,
-    pub previous: String,
-    pub results: i32,
-    pub total_results: i32,
-    pub skipped: i32,
-}
+// #[derive(Debug, serde::Deserialize)]
+// pub struct Paging {
+//     pub next: String,
+//     pub previous: String,
+//     pub results: i32,
+//     pub total_results: i32,
+//     pub skipped: i32,
+// }
+
+// #[derive(Debug, serde::Deserialize)]
+// pub struct User {
+//     pub username: String,
+//     pub user_location: UserLocation,
+//     pub review_count: i32,
+//     pub reviewer_badge: String,
+//     pub avatar: HashMap<String, serde_json::Value>,
+// }
+
+// #[derive(Debug, serde::Deserialize)]
+// pub struct UserLocation {
+//     pub id: String,
+//     pub name: String,
+// }
 
 #[derive(Debug, serde::Deserialize)]
-pub struct User {
-    pub username: String,
-    pub user_location: UserLocation,
-    pub review_count: i32,
-    pub reviewer_badge: String,
-    pub avatar: HashMap<String, serde_json::Value>,
-}
-
-#[derive(Debug, serde::Deserialize)]
-pub struct UserLocation {
-    pub id: String,
-    pub name: String,
-}
-
-#[derive(Debug, serde::Deserialize)]
+#[allow(dead_code)]
 pub struct Address {
     pub street1: Option<String>,
     pub street2: Option<String>,
