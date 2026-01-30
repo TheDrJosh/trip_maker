@@ -96,7 +96,7 @@ fn location_card(location: &random_location::LocationInfo, distance_unit: Distan
                         "Distance: " ( location.distance.convert_to(distance_unit) )
                     }
                     @if let Some(website) = &location.website {
-                        a href=(website) class="text-blue-500 underline break-all" { ( website ) }
+                        a href=(website) class="text-blue-500 hover:underline break-all" { ( website ) }
                     }
                     p { ( &location.address ) }
                     @if let Some(description) = &location.description {

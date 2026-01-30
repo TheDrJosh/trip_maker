@@ -23,6 +23,9 @@ async fn page() -> PreEscaped<String> {
             h2 class="text-2xl tracking-tight font-bold text-zinc-500" {
                 (env!("CARGO_PKG_VERSION"))
             }
+            a href="https://github.com/TheDrJosh/trip_maker" class="text-blue-500 hover:underline" {
+                "https://github.com/TheDrJosh/trip_maker"
+            }
         }
         div class="w-full p-4" {
             form class="flex flex-col gap-4" id="settings-form" hx-post="/partial/generate" hx-target="#generated" hx-swap="innerHTML" hx-disabled-elt="#generate-button" hx-indicator="#loading-indicator" {
