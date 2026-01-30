@@ -71,7 +71,7 @@ pub struct Details {
     pub brand: Option<String>,
     pub category: Option<Name>,
     pub subcategory: Vec<Name>,
-    pub group: Option<Vec<Group>>,
+    pub groups: Option<Vec<Group>>,
     pub styles: Option<Vec<String>>,
     pub neighborhood_info: Vec<Name>,
     pub trip_types: Vec<TripType>,
@@ -133,15 +133,13 @@ pub struct DayTime {
     pub time: String,
 }
 
-#[derive(Debug, serde::Deserialize)]
-#[allow(dead_code)]
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
 pub struct Name {
     pub name: String,
     pub localized_name: Option<String>,
 }
 
-#[derive(Debug, serde::Deserialize)]
-#[allow(dead_code)]
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
 pub struct Group {
     #[serde(flatten)]
     pub name: Name,

@@ -69,16 +69,20 @@ pub async fn submit(
 
 fn location_card(location: &random_location::LocationInfo, distance_unit: DistanceUnit) -> Markup {
     html! {
-        div class="border border-zinc-500 rounded-xl p-4 flex flex-col gap-2 w-64" x-data="{ open: false }" {
+        div class="border border-zinc-500 rounded-xl p-4 flex flex-col gap-2 w-64 items-start" x-data="{ open: false }" {
             h2 class="text-2xl font-bold" { ( &location.name ) }
-            p {
-                "Rating: " ( location.rating )
+            @if let Some(rating_image_url) = &location.rating_url {
+                img src=( rating_image_url ) alt=(format!("Rating: {} / 5", location.rating)) class="h-4 aspect-auto" {}
+            } @else {
+                p {
+                    "Rating: " ( location.rating ) " / 5"
+                }
             }
             p {
                 "Distance: " ( location.distance.convert_to(distance_unit) )
             }
             @if let Some(website) = &location.website {
-                a href=(website) class="text-blue-500 hover:underline break-all" { ( website ) }
+                a href=(website) class="text-blue-500 hover:underline break-all" { "Website" }
             }
             p { ( &location.address ) }
 
@@ -87,7 +91,7 @@ fn location_card(location: &random_location::LocationInfo, distance_unit: Distan
             }
 
             div class="fixed inset-0 bg-black/50 w-full h-full flex items-center justify-center" x-show="open" x-cloak {
-                div class="bg-zinc-600 rounded-xl p-4 max-w-lg w-full" "x-on:click.outside"="open = false" {
+                div class="bg-zinc-600 rounded-xl p-4 max-w-lg w-full flex flex-col items-start" "x-on:click.outside"="open = false" {
                     h2 class="text-2xl font-bold mb-4" { ( &location.name ) }
                     p {
                         "Rating: " ( location.rating ) " / 5"
@@ -99,9 +103,33 @@ fn location_card(location: &random_location::LocationInfo, distance_unit: Distan
                         a href=(website) class="text-blue-500 hover:underline break-all" { ( website ) }
                     }
                     p { ( &location.address ) }
+
                     @if let Some(description) = &location.description {
                         p class="pt-2" { ( description ) }
                     }
+
+
+
+                    div class="mt-4" {
+                        h3 class="font-bold" { "Categories:" }
+
+                        @for group in &location.group {
+                            div class="px-2 py-1" {
+                                h4 class="text-sm font-bold" {
+                                    ( &group.name.name )
+                                }
+                                div class="flex flex-row flex-wrap gap-4 mt-2" {
+                                    @for category in &group.categories {
+                                        span class="text-sm" {
+                                            ( &category.name )
+                                        }
+                                    }
+                                }
+                            }
+                            
+                        }
+                    }
+
                     button class="bg-zinc-700 px-2 py-1 rounded-lg hover:bg-zinc-800 mt-4" x-on:click="open = false" {
                         "Close"
                     }

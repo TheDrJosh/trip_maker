@@ -212,8 +212,8 @@ pub struct Address {
     pub street1: Option<String>,
     pub street2: Option<String>,
     pub city: Option<String>,
-    pub state: String,
-    pub country: String,
+    pub state: Option<String>,
+    pub country: Option<String>,
     pub postalcode: Option<String>,
     pub address_string: String,
 }

@@ -88,7 +88,7 @@ async fn page() -> PreEscaped<String> {
                                 label for="max_distance" {
                                     "Max Distance"
                                 }
-                                input id="max_distance" name="max_distance" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="10" inputmode="decimal" hx-get="/partial/check" hx-target="#max-distance-error" hx-trigger="keyup changed" hx-swap="innerHTML";
+                                input id="max_distance" name="max_distance" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="20" inputmode="decimal" hx-get="/partial/check" hx-target="#max-distance-error" hx-trigger="keyup changed" hx-swap="innerHTML";
                             }
                             span class="text-red-500" id="max-distance-error" {}
                         }

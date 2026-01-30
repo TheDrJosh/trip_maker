@@ -1,7 +1,7 @@
 use longitude::{Direction, Distance, Location};
 use rand::Rng;
 
-use crate::trip_advisor::{self, TripAdvisor};
+use crate::trip_advisor::{self, TripAdvisor, details::Group};
 
 fn get_rand_cord(center: &Location, radius: &Distance, closeness: f64) -> Location {
     let mut rand = rand::rng();
@@ -24,8 +24,10 @@ pub struct LocationInfo {
     pub description: Option<String>,
     pub website: Option<String>,
     pub rating: f64,
+    pub rating_url: Option<String>,
     pub address: String,
     pub distance: Distance,
+    pub group: Vec<Group>,
 }
 
 pub async fn get_random_location(
@@ -81,8 +83,10 @@ pub async fn get_random_location(
                     description: details.description,
                     website: details.website,
                     rating,
+                    rating_url: details.rating_image_url,
                     address: details.address_obj.address_string,
                     distance,
+                    group: details.groups.unwrap_or_default(),
                 });
                 break;
             }
