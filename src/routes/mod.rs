@@ -8,7 +8,7 @@ use reqwest::header::CONTENT_TYPE;
 
 use crate::state::State;
 
-mod root;
+pub mod root;
 
 pub fn routes() -> Router<State> {
     Router::new()

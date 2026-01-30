@@ -31,14 +31,17 @@ async fn page() -> PreEscaped<String> {
                                 label for="latitude" {
                                     "Latitude"
                                 }
-                                input name="latitude" id="latitude" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" step="0.0000000000000001" inputmode="decimal";
+                                input name="latitude" id="latitude" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" inputmode="decimal" hx-get="/partial/check" hx-target="#latitude-error" hx-trigger="keyup changed" hx-swap="innerHTML";
                             }
+                            span class="text-red-500" id="latitude-error" {}
+
                             div class="flex flex-row gap-2 items-center" {
                                 label for="longitude" {
                                     "Longitude"
                                 }
-                                input name="longitude" id="longitude" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" step="0.0000000000000001" inputmode="decimal";
+                                input name="longitude" id="longitude" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" inputmode="decimal" hx-get="/partial/check" hx-target="#longitude-error" hx-trigger="keyup changed" hx-swap="innerHTML";
                             }
+                            span class="text-red-500" id="longitude-error" {}
                             button type="button" class="bg-zinc-700 px-2 py-1 rounded-lg hover:bg-zinc-800 self-start" onclick="setPosition()" {
                                 "Current Position"
                             }
@@ -80,28 +83,32 @@ async fn page() -> PreEscaped<String> {
                                 label for="max_distance" {
                                     "Max Distance"
                                 }
-                                input name="max_distance" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="10" min="0" inputmode="decimal";
+                                input id="max_distance" name="max_distance" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="10" inputmode="decimal" hx-get="/partial/check" hx-target="#max-distance-error" hx-trigger="keyup changed" hx-swap="innerHTML";
                             }
+                            span class="text-red-500" id="max-distance-error" {}
                         }
                         div class="flex flex-col gap-2 flex-1" {
                             div class="flex flex-row gap-2 items-center" {
                                 label for="closeness_bias" {
                                     "Closeness Bias"
                                 }
-                                input name="closeness_bias" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="1" min="0.2" max="5" step="0.1" inputmode="decimal";
+                                input id="closeness_bias" name="closeness_bias" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="1" inputmode="decimal" hx-get="/partial/check" hx-target="#closeness-bias-error" hx-trigger="keyup changed" hx-swap="innerHTML";
                             }
+                            span class="text-red-500" id="closeness-bias-error" {}
                             div class="flex flex-row gap-2 items-center" {
                                 label for="minimum_rating" {
                                     "Minimum Rating"
                                 }
-                                input name="minimum_rating" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" min="0" max="5" step="0.1" inputmode="decimal";
+                                input id="minimum_rating" name="minimum_rating" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="0" inputmode="decimal" hx-get="/partial/check" hx-target="#minimum-rating-error" hx-trigger="keyup changed" hx-swap="innerHTML";
                             }
+                            span class="text-red-500" id="minimum-rating-error" {}
                             div class="flex flex-row gap-2 items-center" {
                                 label for="number_to_generate" {
                                     "Number To Generate"
                                 }
-                                input name="number_to_generate" type="number" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="5" step="1" min="0" max="15" inputmode="numeric";
+                                input id="number_to_generate" name="number_to_generate" class="bg-zinc-700 px-1 py-0.5 rounded-lg" value="5" inputmode="numeric" hx-get="/partial/check" hx-target="#number-to-generate-error" hx-trigger="keyup changed" hx-swap="innerHTML";
                             }
+                            span class="text-red-500" id="number-to-generate-error" {}
                         }
                     }
                 }
