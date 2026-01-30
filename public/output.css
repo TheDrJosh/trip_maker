@@ -208,6 +208,9 @@
   .table {
     display: table;
   }
+  .h-full {
+    height: 100%;
+  }
   .w-64 {
     width: calc(var(--spacing) * 64);
   }

@@ -86,7 +86,7 @@ fn location_card(location: &random_location::LocationInfo, distance_unit: Distan
                 "More Info"
             }
 
-            div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" x-show="open" "x-on:click.away"="open = false" x-cloak {
+            div class="fixed inset-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center" x-show="open" "x-on:click.away"="open = false" x-cloak {
                 div class="bg-zinc-800 rounded-xl p-4 max-w-lg w-full" {
                     h2 class="text-2xl font-bold mb-4" { ( &location.name ) }
                     button class="bg-zinc-700 px-2 py-1 rounded-lg hover:bg-zinc-800 mt-4" x-on:click="open = false" {
