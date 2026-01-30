@@ -78,7 +78,7 @@ fn location_card(location: &random_location::LocationInfo, distance_unit: Distan
                 "Distance: " ( location.distance.convert_to(distance_unit) )
             }
             @if let Some(website) = &location.website {
-                a href=(website) class="text-blue-500 underline break-all" { ( website ) }
+                a href=(website) class="text-blue-500 hover:underline break-all" { ( website ) }
             }
             p { ( &location.address ) }
 
@@ -86,8 +86,8 @@ fn location_card(location: &random_location::LocationInfo, distance_unit: Distan
                 "More Info"
             }
 
-            div class="fixed inset-0 bg-black opacity-50 w-full h-full flex items-center justify-center" x-show="open" "x-on:click.away"="open = false" x-cloak {
-                div class="bg-zinc-800 rounded-xl p-4 max-w-lg w-full" {
+            div class="fixed inset-0 bg-black opacity-50 w-full h-full flex items-center justify-center" x-show="open" "x-on:click"="open = false" x-cloak {
+                div class="bg-zinc-800 opacity-100 rounded-xl p-4 max-w-lg w-full" {
                     h2 class="text-2xl font-bold mb-4" { ( &location.name ) }
                     p {
                         "Rating: " ( location.rating )
