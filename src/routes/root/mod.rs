@@ -25,7 +25,7 @@ async fn page() -> PreEscaped<String> {
             }
         }
         div class="w-full p-4" {
-            form class="flex flex-col gap-4" id="settings-form" hx-post="/partial/generate" hx-target="#generated" hx-swap="innerHTML" {
+            form class="flex flex-col gap-4" id="settings-form" hx-post="/partial/generate" hx-target="#generated" hx-swap="innerHTML" hx-disabled-elt="#generate-button" hx-indicator="#loading-indicator" {
                 div class="border border-zinc-500 rounded-xl px-2 py-1" {
                     div class="flex flex-row flex-wrap gap-4" {
                         div class="flex flex-col gap-2 flex-1" {
@@ -114,9 +114,13 @@ async fn page() -> PreEscaped<String> {
                         }
                     }
                 }
-                button type="submit" class="bg-zinc-700 px-2 py-1 rounded-lg text-lg font-bold tracking-tight self-start hover:bg-zinc-800 hover:text-amber-500" {
-                    "Generate"
+                div class="flex flex-row gap-4 items-center" {
+                    button id="generate-button" type="submit" class="bg-zinc-700 px-2 py-1 rounded-lg text-lg font-bold tracking-tight self-start hover:bg-zinc-800 hover:text-amber-500" {
+                        "Generate"
+                    }
+                    img src="/tail-spin.svg" class="w-6 h-6 htmx-indicator" id="loading-indicator"  {};
                 }
+                
             }
             script {
                 (PreEscaped(include_str!("set_location.js")))

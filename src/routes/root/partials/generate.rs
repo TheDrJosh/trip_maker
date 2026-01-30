@@ -90,7 +90,7 @@ fn location_card(location: &random_location::LocationInfo, distance_unit: Distan
                 div class="bg-zinc-600 rounded-xl p-4 max-w-lg w-full" "x-on:click.outside"="open = false" {
                     h2 class="text-2xl font-bold mb-4" { ( &location.name ) }
                     p {
-                        "Rating: " ( location.rating )
+                        "Rating: " ( location.rating ) " / 5"
                     }
                     p {
                         "Distance: " ( location.distance.convert_to(distance_unit) )
