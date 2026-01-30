@@ -61,17 +61,15 @@ pub async fn submit(
     .await?;
 
     Ok(html! {
-        div id="generated" class="border border-zinc-500 rounded-xl m-2 p-2" {
-            @for location in &locations {
-                ( location_card(location) )
-            }
+        @for location in &locations {
+            ( location_card(location) )
         }
     })
 }
 
 fn location_card(location: &random_location::LocationInfo) -> Markup {
     html! {
-        div class="border border-zinc-500 rounded-xl p-4 flex flex-col gap-2" {
+        div class="border border-zinc-500 rounded-xl p-4 flex flex-col gap-2 min-w-48" {
             h2 class="text-2xl font-bold" { ( &location.name ) }
             @if let Some(description) = &location.description {
                 p { ( description ) }
@@ -104,7 +102,7 @@ impl IntoResponse for ResultError {
     fn into_response(self) -> axum::response::Response {
         match &self {
             ResultError::OutOfRangeFloat(field, min_bound, max_bound) => html! {
-                div id="generated" class="border border-zinc-500 rounded-xl m-2 p-2 text-red-500" {
+                span class="text-red-500" {
                     "Out of Range. Field: " (field) " Min: " (match min_bound {
                         Bound::Included(bound) => html!{ (bound) },
                         Bound::Excluded(bound) => html!{ "Exclusive: " (bound) },
@@ -117,7 +115,7 @@ impl IntoResponse for ResultError {
                 }
             },
             ResultError::OutOfRangeInt(field, min_bound, max_bound) => html! {
-                div id="generated" class="border border-zinc-500 rounded-xl m-2 p-2 text-red-500" {
+                span class="text-red-500" {
                     "Out of Range Int. Field: " (field) " Min: " (match min_bound {
                         Bound::Included(bound) => html!{ (bound) },
                         Bound::Excluded(bound) => html!{ "Exclusive: " (bound) },
@@ -130,12 +128,12 @@ impl IntoResponse for ResultError {
                 }
             },
             ResultError::FormRejection(form_rejection) => html! {
-                div id="generated" class="border border-zinc-500 rounded-xl m-2 p-2 text-red-500" {
+                span class="text-red-500" {
                     "Form Rejection: " (form_rejection)
                 }
             },
             ResultError::GetRandomLocationError(get_random_location_error) => html! {
-                div id="generated" class="border border-zinc-500 rounded-xl m-2 p-2 text-red-500" {
+                span class="text-red-500" {
                     "Get Random Location Error: " (get_random_location_error)
                 }
             },

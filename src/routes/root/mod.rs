@@ -25,7 +25,7 @@ async fn page() -> PreEscaped<String> {
             }
         }
         div class="w-full p-4" {
-            form class="flex flex-col gap-4" id="settings-form" hx-post="/partial/generate" hx-target="#generated" hx-swap="outerHTML" {
+            form class="flex flex-col gap-4" id="settings-form" hx-post="/partial/generate" hx-target="#generated" hx-swap="innerHTML" {
                 div class="border border-zinc-500 rounded-xl px-2 py-1" {
                     div class="flex flex-row flex-wrap gap-4" {
                         div class="flex flex-col gap-2 flex-1" {
@@ -122,7 +122,7 @@ async fn page() -> PreEscaped<String> {
                 (PreEscaped(include_str!("set_location.js")))
             }
         }
-        div id="generated" {
+        div id="generated" class="flex flex-row flex-wrap gap-4 p-4" {
 
         }
     })
