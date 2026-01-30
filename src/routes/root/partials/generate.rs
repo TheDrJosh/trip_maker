@@ -62,21 +62,20 @@ pub async fn submit(
 
     Ok(html! {
         @for location in &locations {
-            ( location_card(location) )
+            ( location_card(location, settings.distance_unit) )
         }
     })
 }
 
-fn location_card(location: &random_location::LocationInfo) -> Markup {
+fn location_card(location: &random_location::LocationInfo, distance_unit: DistanceUnit) -> Markup {
     html! {
-        div class="border border-zinc-500 rounded-xl p-4 flex flex-col gap-2 min-w-48" {
+        div class="border border-zinc-500 rounded-xl p-4 flex flex-col gap-2 min-w-48 max-w-64" {
             h2 class="text-2xl font-bold" { ( &location.name ) }
-            @if let Some(description) = &location.description {
-                p { ( description ) }
-            }
             p {
                 "Rating: " ( location.rating )
-                " | Distance: " ( location.distance.kilometers() ) " km"
+            }
+            p {
+                "Distance: " ( format!("{:.2}", location.distance.convert_to(distance_unit).to_string()) )
             }
             @if let Some(website) = &location.website {
                 a href=(website) class="text-blue-500 underline" { ( website ) }
