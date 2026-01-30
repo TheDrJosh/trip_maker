@@ -75,7 +75,7 @@ fn location_card(location: &random_location::LocationInfo, distance_unit: Distan
                 "Rating: " ( location.rating )
             }
             p {
-                "Distance: " ( format!("{:.2}", location.distance.convert_to(distance_unit).to_string()) )
+                "Distance: " ( location.distance.convert_to(distance_unit) )
             }
             @if let Some(website) = &location.website {
                 a href=(website) class="text-blue-500 underline" { ( website ) }
