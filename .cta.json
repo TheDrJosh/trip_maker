@@ -9,11 +9,7 @@
   "version": 1,
   "addOns": true,
   "framework": "react-cra",
-  "options": {
-    "drizzle": {
-      "database": "postgresql"
-    }
-  },
+
   "chosenAddOns": [
     "biome",
     "shadcn",
