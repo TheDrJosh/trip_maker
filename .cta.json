@@ -1,0 +1,21 @@
+{
+  "projectName": "trip_maker",
+  "mode": "file-router",
+  "typescript": true,
+  "packageManager": "npm",
+  "tailwind": true,
+  "addOnOptions": {},
+  "git": true,
+  "version": 1,
+  "framework": "react-cra",
+  "chosenAddOns": [
+    "biome",
+    "shadcn",
+    "t3env",
+    "railway",
+    "compiler",
+    "form",
+    "tanstack-query",
+    "start"
+  ]
+}
