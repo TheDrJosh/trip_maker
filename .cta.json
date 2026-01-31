@@ -6,7 +6,7 @@
   "tailwind": true,
   "addOnOptions": {
     "drizzle": {
-      "database": "postgres"
+      "database": "postgresql"
     }
   },
   "git": true,
