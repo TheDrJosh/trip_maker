@@ -10,7 +10,9 @@
   "addOns": true,
   "framework": "react-cra",
   "options": {
-    "database": "postgresql"
+    "drizzle": {
+      "database": "postgresql"
+    }
   },
   "chosenAddOns": [
     "biome",
