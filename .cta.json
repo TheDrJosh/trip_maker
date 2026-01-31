@@ -13,7 +13,6 @@
   "version": 1,
   "addOns": true,
   "framework": "react-cra",
-
   "chosenAddOns": [
     "biome",
     "shadcn",
@@ -23,6 +22,7 @@
     "form",
     "tanstack-query",
     "start",
-    "better-auth"
+    "better-auth",
+    "drizzle"
   ]
 }
