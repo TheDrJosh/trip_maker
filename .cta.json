@@ -4,7 +4,11 @@
   "typescript": true,
   "packageManager": "npm",
   "tailwind": true,
-  "addOnOptions": {},
+  "addOnOptions": {
+    "drizzle": {
+      "database": "postgres"
+    }
+  },
   "git": true,
   "version": 1,
   "addOns": true,
