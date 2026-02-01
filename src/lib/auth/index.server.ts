@@ -1,83 +1,11 @@
-// import { MemoryStorage } from "@openauthjs/openauth/storage/memory";
 import { issuer } from "@openauthjs/openauth";
 import { PasswordProvider } from "@openauthjs/openauth/provider/password";
 import { MemoryStorage } from "@openauthjs/openauth/storage/memory";
 import { PasswordUI } from "@openauthjs/openauth/ui/password";
-import { redirect } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeader } from "@tanstack/react-start/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { client, useAuthSession } from ".";
-import { subjects } from "./subjects";
-
-export const loginFn = createServerFn({ method: "POST" }).handler(async () => {
-    const session = await useAuthSession();
-    if (session.data.accessToken) {
-        const verified = await client.verify(
-            subjects,
-            session.data.accessToken,
-            {
-                refresh: session.data.refreshToken,
-            },
-        );
-        if (!verified.err && verified.tokens) {
-            session.update({
-                accessToken: verified.tokens.access,
-                refreshToken: verified.tokens.refresh,
-            });
-            throw redirect({ to: "/" });
-        }
-    }
-
-    const host = getRequestHeader("host");
-    const protocol = host?.includes("localhost") ? "http" : "https";
-    const { url } = await client.authorize(
-        `${protocol}://${host}/api/callback`,
-        "code",
-    );
-    throw redirect({ to: url });
-});
-
-export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
-    const session = await useAuthSession();
-
-    session.clear();
-
-    throw redirect({ to: "/" });
-});
-
-export const getCurrentUserFn = createServerFn({ method: "GET" }).handler(
-    async () => {
-        const session = await useAuthSession();
-
-        if (!session.data.accessToken) {
-            return false;
-        }
-
-        const verified = await client.verify(
-            subjects,
-            session.data.accessToken,
-            {
-                refresh: session.data.refreshToken,
-            },
-        );
-
-        if (verified.err) {
-            return false;
-        }
-
-        if (verified.tokens) {
-            session.update({
-                accessToken: verified.tokens.access,
-                refreshToken: verified.tokens.refresh,
-            });
-        }
-
-        return verified.subject;
-    },
-);
+import { subjects } from "./subjects.server";
 
 async function getUser(email: string) {
     const db_user = await db.select().from(users).where(eq(users.email, email));

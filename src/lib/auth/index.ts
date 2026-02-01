@@ -7,13 +7,10 @@ export const client = createClient({
     issuer: env.RAILWAY_PUBLIC_DOMAIN,
 });
 
-
-
 export type SessionData = {
     accessToken: string;
     refreshToken: string;
 };
-
 export function useAuthSession() {
     return useSession<SessionData>({
         name: "trip_maker",
@@ -25,4 +22,3 @@ export function useAuthSession() {
         },
     });
 }
-
