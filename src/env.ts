@@ -5,8 +5,8 @@ console.log(process.env)
 
 export const env = createEnv({
     server: {
-        DATABASE_URL: z.url(),
-        RAILWAY_PUBLIC_DOMAIN: z.url(),
+        DATABASE_URL: z.string(),
+        RAILWAY_PUBLIC_DOMAIN: z.string(),
         SESSION_SECRET: z.string().min(32),
         TRIPADVISOR_API_KEY: z.string(),
     },
