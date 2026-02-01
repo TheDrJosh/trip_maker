@@ -1,7 +1,7 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
 
-console.log(import.meta.env)
+console.log(process.env)
 
 export const env = createEnv({
     server: {
@@ -25,7 +25,7 @@ export const env = createEnv({
      * What object holds the environment variables at runtime. This is usually
      * `process.env` or `import.meta.env`.
      */
-    runtimeEnv: import.meta.env,
+    runtimeEnv: process.env,
 
     /**
      * By default, this library will feed the environment variables directly to
