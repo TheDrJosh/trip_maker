@@ -5,7 +5,7 @@ export const env = createEnv({
     server: {
         DATABASE_URL: z.url(),
         OPENAUTH_URL: z.url(),
-        SESSION_SECRET: z.string().min(32),
+        TRIPADVISOR_API_KEY: z.string(),
     },
 
     /**
