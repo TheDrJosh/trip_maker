@@ -7,11 +7,7 @@
   "addOnOptions": {},
   "git": true,
   "version": 1,
-  "addOns": true,
   "framework": "react-cra",
-  "options": {
-    "database": "postgresql"
-  },
   "chosenAddOns": [
     "biome",
     "shadcn",
@@ -20,7 +16,6 @@
     "compiler",
     "form",
     "tanstack-query",
-    "start",
-    "better-auth"
+    "start"
   ]
 }
