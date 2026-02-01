@@ -1,7 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { getCurrentUserFn } from "@/lib/auth/index.functions";
+import { useCurrentUser } from "@/hooks/auth";
 import { Button } from "./ui/button";
 
 export default function Header() {
@@ -23,12 +21,7 @@ export default function Header() {
 }
 
 function AuthHeader() {
-    const getUser = useServerFn(getCurrentUserFn);
-
-    const { data } = useQuery({
-        queryKey: ["currentUser"],
-        queryFn: getUser,
-    });
+    const { data } = useCurrentUser();
 
     if (data) {
         return (

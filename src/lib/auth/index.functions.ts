@@ -1,13 +1,12 @@
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import { client, useAuthSession } from ".";
-import { subjects } from "./subjects.server";
+import { authClient, subjects, useAuthSession } from "./index.server";
 
 export const loginFn = createServerFn({ method: "POST" }).handler(async () => {
     const session = await useAuthSession();
     if (session.data.accessToken) {
-        const verified = await client.verify(
+        const verified = await authClient.verify(
             subjects,
             session.data.accessToken,
             {
@@ -25,7 +24,7 @@ export const loginFn = createServerFn({ method: "POST" }).handler(async () => {
 
     const host = getRequestHeader("host");
     const protocol = host?.includes("localhost") ? "http" : "https";
-    const { url } = await client.authorize(
+    const { url } = await authClient.authorize(
         `${protocol}://${host}/api/callback`,
         "code",
     );
@@ -48,7 +47,7 @@ export const getCurrentUserFn = createServerFn({ method: "GET" }).handler(
             return false;
         }
 
-        const verified = await client.verify(
+        const verified = await authClient.verify(
             subjects,
             session.data.accessToken,
             {
