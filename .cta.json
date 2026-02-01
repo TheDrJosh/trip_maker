@@ -8,7 +8,6 @@
   "git": true,
   "version": 1,
   "framework": "react-cra",
-  "database": "postgresql",
   "chosenAddOns": [
     "biome",
     "shadcn",
