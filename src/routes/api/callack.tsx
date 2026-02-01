@@ -1,7 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import z from "zod";
-import { client } from "@/lib/auth";
-import { useAuthSession } from "@/lib/auth/server";
+import { client, useAuthSession } from "@/lib/auth";
 
 const callbackSearchParams = z.object({
     code: z.string(),
@@ -17,8 +16,6 @@ export const Route = createFileRoute("/api/callack")({
                 const session = await useAuthSession();
 
                 const exchanged = await client.exchange(code, `/api/callback`);
-
-                
 
                 if (exchanged.err) {
                     return Response.json(exchanged.err, { status: 400 });

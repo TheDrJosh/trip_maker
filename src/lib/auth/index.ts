@@ -3,6 +3,7 @@ import { createClient } from "@openauthjs/openauth/client";
 import { PasswordProvider } from "@openauthjs/openauth/provider/password";
 import { MemoryStorage } from "@openauthjs/openauth/storage/memory";
 import { PasswordUI } from "@openauthjs/openauth/ui/password";
+import { useSession } from "@tanstack/react-start/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
@@ -48,3 +49,20 @@ export default issuer({
         throw new Error("Invalid provider");
     },
 });
+
+export type SessionData = {
+    accessToken: string;
+    refreshToken: string;
+};
+
+export function useAuthSession() {
+    return useSession<SessionData>({
+        name: "trip_maker",
+        password: env.SESSION_SECRET,
+        cookie: {
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            httpOnly: true,
+        },
+    });
+}

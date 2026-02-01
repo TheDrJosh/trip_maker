@@ -1,26 +1,9 @@
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeader, useSession } from "@tanstack/react-start/server";
-import { env } from "@/env";
-import { client } from ".";
+import { getRequestHeader } from "@tanstack/react-start/server";
+import { client, useAuthSession } from ".";
 import { subjects } from "./subjects";
 
-export type SessionData = {
-    accessToken: string;
-    refreshToken: string;
-};
-
-export function useAuthSession() {
-    return useSession<SessionData>({
-        name: "trip_maker",
-        password: env.SESSION_SECRET,
-        cookie: {
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            httpOnly: true,
-        },
-    });
-}
 
 export const loginFn = createServerFn({ method: "POST" }).handler(async () => {
     const session = await useAuthSession();
