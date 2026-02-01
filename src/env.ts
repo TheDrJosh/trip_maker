@@ -4,6 +4,8 @@ import { z } from "zod";
 export const env = createEnv({
     server: {
         DATABASE_URL: z.url(),
+        OPENAUTH_URL: z.url(),
+        SESSION_SECRET: z.string().min(32),
     },
 
     /**
@@ -13,7 +15,7 @@ export const env = createEnv({
     clientPrefix: "VITE_",
 
     client: {
-        // VITE_APP_VERSION: z.string().optional(),
+        VITE_APP_NAME: z.string().optional(),
     },
 
     /**

@@ -22,7 +22,6 @@
     "form",
     "tanstack-query",
     "start",
-    "better-auth",
     "drizzle"
   ]
 }

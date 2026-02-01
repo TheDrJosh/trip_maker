@@ -1,4 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { getCurrentUserFn } from "@/lib/auth/server";
+import { Button } from "./ui/button";
 
 export default function Header() {
     return (
@@ -13,7 +17,30 @@ export default function Header() {
             </h1>
             <div className="flex-1"></div>
 
-            {/* <BetterAuthHeader /> */}
+            <AuthHeader />
         </header>
+    );
+}
+
+function AuthHeader() {
+    const getUser = useServerFn(getCurrentUserFn);
+
+    const { data } = useQuery({
+        queryKey: ["currentUser"],
+        queryFn: getUser,
+    });
+
+    if (data) {
+        return (
+            <Button asChild>
+                <Link to="/account">{data.properties.username}</Link>
+            </Button>
+        );
+    }
+
+    return (
+        <Button asChild>
+            <Link to="/sign-in">Sign in</Link>
+        </Button>
     );
 }
