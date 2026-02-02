@@ -5,8 +5,8 @@ import { MemoryStorage } from "@openauthjs/openauth/storage/memory";
 import { PasswordUI } from "@openauthjs/openauth/ui/password";
 import { eq } from "drizzle-orm";
 import { generateFromEmail } from "unique-username-generator";
-import { users } from "@/db/schema.ts";
-import { subjects } from "@/lib/auth/sesstion.ts";
+import { users } from "../db/schema";
+import { subjects } from "../lib/auth/sesstion";
 import { db } from "./db";
 import { env } from "./env";
 

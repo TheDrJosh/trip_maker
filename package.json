@@ -18,7 +18,8 @@
     "db:pull": "drizzle-kit pull",
     "db:studio": "drizzle-kit studio",
     "auth:dev": "PORT=3001 tsx --watch src/auth/index.ts",
-    "auth:build": "tsc src/auth/index.ts --outDir .output/"
+    "auth:build": "npx tsc src/auth/index.ts --outDir .output/ --target ES2022 --module nodenext --moduleResolution nodenext --rewriteRelativeImportExtensions",
+    "auth:start": "node .output/auth/index.js"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",
