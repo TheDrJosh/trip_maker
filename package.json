@@ -18,7 +18,7 @@
     "db:pull": "drizzle-kit pull",
     "db:studio": "drizzle-kit studio",
     "auth:dev": "PORT=3001 tsx --watch src/auth/index.ts",
-    "auth:build": ""
+    "auth:build": "tsc src/auth/index.ts --outDir .output/"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",
