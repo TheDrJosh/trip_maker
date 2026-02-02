@@ -1,5 +1,6 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useCurrentUser } from "@/hooks/auth";
+import { loginFn } from "@/lib/auth/index.functions";
 import { Button } from "./ui/button";
 
 export default function Header() {
@@ -23,6 +24,9 @@ export default function Header() {
 function AuthHeader() {
     const { data } = useCurrentUser();
 
+    const nav = useNavigate();
+    // const login_fn = useServerFn(loginFn);
+
     if (data) {
         return (
             <Button asChild>
@@ -32,8 +36,21 @@ function AuthHeader() {
     }
 
     return (
-        <Button asChild>
-            <Link to="/sign-in">Sign in</Link>
+        <Button
+            // asChild
+            onClick={async () => {
+                console.log("test");
+                const url = await loginFn();
+
+                if (url) {
+                    nav({ href: url });
+                } else {
+                    nav({ to: "/" });
+                }
+            }}
+        >
+            {/* <Link to="/sign-in">Sign in</Link> */}
+            Sign in
         </Button>
     );
 }

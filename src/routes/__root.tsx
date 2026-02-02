@@ -45,7 +45,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <head>
                 <HeadContent />
             </head>
-            <body className="min-h-screen flex flex-col">
+            <body className="min-h-screen flex flex-col dark">
                 <Header />
                 <div className="bg-linear-to-b from-zinc-900 via-zinc-800 to-zinc-900 flex-1 text-white">
                     {children}

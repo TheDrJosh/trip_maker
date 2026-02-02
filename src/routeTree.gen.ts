@@ -9,16 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiCallackRouteImport } from './routes/api/callack'
+import { Route as ApiCallbackRouteImport } from './routes/api/callback'
 
-const SignInRoute = SignInRouteImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AccountRoute = AccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -29,55 +23,44 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiCallackRoute = ApiCallackRouteImport.update({
-  id: '/api/callack',
-  path: '/api/callack',
+const ApiCallbackRoute = ApiCallbackRouteImport.update({
+  id: '/api/callback',
+  path: '/api/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
-  '/sign-in': typeof SignInRoute
-  '/api/callack': typeof ApiCallackRoute
+  '/api/callback': typeof ApiCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
-  '/sign-in': typeof SignInRoute
-  '/api/callack': typeof ApiCallackRoute
+  '/api/callback': typeof ApiCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
-  '/sign-in': typeof SignInRoute
-  '/api/callack': typeof ApiCallackRoute
+  '/api/callback': typeof ApiCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/account' | '/sign-in' | '/api/callack'
+  fullPaths: '/' | '/account' | '/api/callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/sign-in' | '/api/callack'
-  id: '__root__' | '/' | '/account' | '/sign-in' | '/api/callack'
+  to: '/' | '/account' | '/api/callback'
+  id: '__root__' | '/' | '/account' | '/api/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
-  SignInRoute: typeof SignInRoute
-  ApiCallackRoute: typeof ApiCallackRoute
+  ApiCallbackRoute: typeof ApiCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sign-in': {
-      id: '/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof SignInRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/account': {
       id: '/account'
       path: '/account'
@@ -92,11 +75,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/callack': {
-      id: '/api/callack'
-      path: '/api/callack'
-      fullPath: '/api/callack'
-      preLoaderRoute: typeof ApiCallackRouteImport
+    '/api/callback': {
+      id: '/api/callback'
+      path: '/api/callback'
+      fullPath: '/api/callback'
+      preLoaderRoute: typeof ApiCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -105,8 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
-  SignInRoute: SignInRoute,
-  ApiCallackRoute: ApiCallackRoute,
+  ApiCallbackRoute: ApiCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
