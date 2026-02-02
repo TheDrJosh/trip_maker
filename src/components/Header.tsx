@@ -49,7 +49,7 @@ function AuthHeader() {
                 }
             }}
         >
-            {/* <Link to="/sign-in">Sign in</Link> */}
+            {" "}
             Sign in
         </Button>
     );

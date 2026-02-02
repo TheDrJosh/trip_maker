@@ -6,6 +6,5 @@ export const subjects = createSubjects({
         id: z.int(),
         username: z.string(),
         email: z.string(),
-        createdAt: z.date(),
     }),
 });

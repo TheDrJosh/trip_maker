@@ -32,7 +32,6 @@ async function getUser(email: string) {
             id: created_user.id,
             email: created_user.email,
             username: created_user.username,
-            createdAt: created_user.createdAt,
         };
     }
 
@@ -40,7 +39,6 @@ async function getUser(email: string) {
         id: db_user[0].id,
         email: db_user[0].email,
         username: db_user[0].username,
-        createdAt: db_user[0].createdAt,
     };
 }
 
@@ -60,7 +58,9 @@ const app = issuer({
 
     success: async (ctx, value) => {
         if (value.provider === "password") {
-            return ctx.subject("user", await getUser(value.email));
+            const user = await getUser(value.email);
+
+            return ctx.subject("user", user);
         }
         throw new Error("Invalid provider");
     },

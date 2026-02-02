@@ -8,6 +8,8 @@ export const Route = createFileRoute("/api/callback")({
                 const url = new URL(request.url);
                 const code = url.searchParams.get("code");
 
+                console.log(code);
+
                 const session = await useAuthSession();
 
                 if (!code) {
@@ -17,10 +19,9 @@ export const Route = createFileRoute("/api/callback")({
                     );
                 }
 
-                const exchanged = await authClient.exchange(
-                    code,
-                    `/api/callback`,
-                );
+                const redirect_url = `${url.origin}/api/callback`;
+
+                const exchanged = await authClient.exchange(code, redirect_url);
 
                 console.log(exchanged);
 
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/api/callback")({
                     return Response.json(exchanged.err, { status: 400 });
                 }
 
-                session.update({
+                await session.update({
                     accessToken: exchanged.tokens.access,
                     refreshToken: exchanged.tokens.refresh,
                 });

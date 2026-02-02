@@ -14,7 +14,7 @@ export const loginFn = createServerFn({ method: "POST" }).handler(async () => {
             },
         );
         if (!verified.err && verified.tokens) {
-            session.update({
+            await session.update({
                 accessToken: verified.tokens.access,
                 refreshToken: verified.tokens.refresh,
             });
@@ -24,10 +24,9 @@ export const loginFn = createServerFn({ method: "POST" }).handler(async () => {
 
     const host = getRequestHeader("host");
     const protocol = host?.includes("localhost") ? "http" : "https";
-    const { url } = await authClient.authorize(
-        `${protocol}://${host}/api/callback`,
-        "code",
-    );
+    const redirect_url = `${protocol}://${host}/api/callback`;
+    console.log(redirect_url);
+    const { url } = await authClient.authorize(redirect_url, "code");
 
     return url;
 });
@@ -35,16 +34,20 @@ export const loginFn = createServerFn({ method: "POST" }).handler(async () => {
 export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
     const session = await useAuthSession();
 
-    session.clear();
+    await session.clear();
 });
 
 export const getCurrentUserFn = createServerFn({ method: "GET" }).handler(
     async () => {
+        console.log("get user 1");
         const session = await useAuthSession();
+        console.log("get user 2");
 
         if (!session.data.accessToken) {
             return false;
         }
+
+        console.log("get user 3");
 
         const verified = await authClient.verify(
             subjects,
@@ -54,16 +57,25 @@ export const getCurrentUserFn = createServerFn({ method: "GET" }).handler(
             },
         );
 
+        console.log("get user 4");
+
         if (verified.err) {
+            console.log(verified.err);
             return false;
         }
 
+        console.log("get user 5");
+
         if (verified.tokens) {
-            session.update({
+            console.log("get user 6");
+
+            await session.update({
                 accessToken: verified.tokens.access,
                 refreshToken: verified.tokens.refresh,
             });
         }
+
+        console.log("get user 7");
 
         return verified.subject;
     },
