@@ -9,13 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AccountRouteImport } from './routes/account'
+import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiCallbackRouteImport } from './routes/api/callback'
+import { Route as AuthedGenerateRouteImport } from './routes/_authed/generate'
+import { Route as AuthedFavoritesRouteImport } from './routes/_authed/favorites'
+import { Route as AuthedAccountRouteImport } from './routes/_authed/account'
 
-const AccountRoute = AccountRouteImport.update({
-  id: '/account',
-  path: '/account',
+const AuthedRoute = AuthedRouteImport.update({
+  id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,44 +30,73 @@ const ApiCallbackRoute = ApiCallbackRouteImport.update({
   path: '/api/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedGenerateRoute = AuthedGenerateRouteImport.update({
+  id: '/generate',
+  path: '/generate',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedFavoritesRoute = AuthedFavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedAccountRoute = AuthedAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AuthedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/account': typeof AccountRoute
+  '/account': typeof AuthedAccountRoute
+  '/favorites': typeof AuthedFavoritesRoute
+  '/generate': typeof AuthedGenerateRoute
   '/api/callback': typeof ApiCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/account': typeof AccountRoute
+  '/account': typeof AuthedAccountRoute
+  '/favorites': typeof AuthedFavoritesRoute
+  '/generate': typeof AuthedGenerateRoute
   '/api/callback': typeof ApiCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/account': typeof AccountRoute
+  '/_authed': typeof AuthedRouteWithChildren
+  '/_authed/account': typeof AuthedAccountRoute
+  '/_authed/favorites': typeof AuthedFavoritesRoute
+  '/_authed/generate': typeof AuthedGenerateRoute
   '/api/callback': typeof ApiCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/account' | '/api/callback'
+  fullPaths: '/' | '/account' | '/favorites' | '/generate' | '/api/callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/api/callback'
-  id: '__root__' | '/' | '/account' | '/api/callback'
+  to: '/' | '/account' | '/favorites' | '/generate' | '/api/callback'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authed'
+    | '/_authed/account'
+    | '/_authed/favorites'
+    | '/_authed/generate'
+    | '/api/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AccountRoute: typeof AccountRoute
+  AuthedRoute: typeof AuthedRouteWithChildren
   ApiCallbackRoute: typeof ApiCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/account': {
-      id: '/account'
-      path: '/account'
-      fullPath: '/account'
-      preLoaderRoute: typeof AccountRouteImport
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -82,12 +113,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed/generate': {
+      id: '/_authed/generate'
+      path: '/generate'
+      fullPath: '/generate'
+      preLoaderRoute: typeof AuthedGenerateRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/favorites': {
+      id: '/_authed/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof AuthedFavoritesRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/account': {
+      id: '/_authed/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthedAccountRouteImport
+      parentRoute: typeof AuthedRoute
+    }
   }
 }
 
+interface AuthedRouteChildren {
+  AuthedAccountRoute: typeof AuthedAccountRoute
+  AuthedFavoritesRoute: typeof AuthedFavoritesRoute
+  AuthedGenerateRoute: typeof AuthedGenerateRoute
+}
+
+const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedAccountRoute: AuthedAccountRoute,
+  AuthedFavoritesRoute: AuthedFavoritesRoute,
+  AuthedGenerateRoute: AuthedGenerateRoute,
+}
+
+const AuthedRouteWithChildren =
+  AuthedRoute._addFileChildren(AuthedRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AccountRoute: AccountRoute,
+  AuthedRoute: AuthedRouteWithChildren,
   ApiCallbackRoute: ApiCallbackRoute,
 }
 export const routeTree = rootRouteImport

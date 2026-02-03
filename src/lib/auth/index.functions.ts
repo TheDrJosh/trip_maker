@@ -1,35 +1,40 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { eq } from "drizzle-orm";
+import z from "zod";
+import { db } from "@/db";
+import { users } from "@/db/schema";
 import { subjects } from "@/lib/auth/sesstion";
 import { authClient, useAuthSession } from "./index.server";
 
-export const loginFn = createServerFn({ method: "POST" }).handler(async () => {
-    const session = await useAuthSession();
-    if (session.data.accessToken) {
-        const verified = await authClient.verify(
-            subjects,
-            session.data.accessToken,
-            {
-                refresh: session.data.refreshToken,
-            },
-        );
-        if (!verified.err && verified.tokens) {
-            await session.update({
-                accessToken: verified.tokens.access,
-                refreshToken: verified.tokens.refresh,
-            });
-            return false;
+export const loginUrlFn = createServerFn({ method: "POST" }).handler(
+    async () => {
+        const session = await useAuthSession();
+        if (session.data.accessToken) {
+            const verified = await authClient.verify(
+                subjects,
+                session.data.accessToken,
+                {
+                    refresh: session.data.refreshToken,
+                },
+            );
+            if (!verified.err && verified.tokens) {
+                await session.update({
+                    accessToken: verified.tokens.access,
+                    refreshToken: verified.tokens.refresh,
+                });
+                return null;
+            }
         }
-    }
 
-    const host = getRequestHeader("host");
-    const protocol = host?.includes("localhost") ? "http" : "https";
-    const redirect_url = `${protocol}://${host}/api/callback`;
-    console.log(redirect_url);
-    const { url } = await authClient.authorize(redirect_url, "code");
+        const host = getRequestHeader("host");
+        const protocol = host?.includes("localhost") ? "http" : "https";
+        const redirect_url = `${protocol}://${host}/api/callback`;
+        const { url } = await authClient.authorize(redirect_url, "code");
 
-    return url;
-});
+        return url;
+    },
+);
 
 export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
     const session = await useAuthSession();
@@ -42,7 +47,7 @@ export const getCurrentUserFn = createServerFn({ method: "GET" }).handler(
         const session = await useAuthSession();
 
         if (!session.data.accessToken) {
-            return false;
+            return null;
         }
 
         const verified = await authClient.verify(
@@ -54,7 +59,7 @@ export const getCurrentUserFn = createServerFn({ method: "GET" }).handler(
         );
 
         if (verified.err) {
-            return false;
+            return null;
         }
 
         if (verified.tokens) {
@@ -64,6 +69,30 @@ export const getCurrentUserFn = createServerFn({ method: "GET" }).handler(
             });
         }
 
-        return verified.subject;
+        const user = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, verified.subject.properties.id));
+
+        if (user.length === 1) {
+            return user[0];
+        }
+        return null;
     },
 );
+
+export const setUsernameFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        z.object({
+            user_id: z.int(),
+            username: z.string().min(3),
+        }),
+    )
+    .handler(async ({ data }) => {
+        await db
+            .update(users)
+            .set({
+                username: data.username,
+            })
+            .where(eq(users.id, data.user_id));
+    });

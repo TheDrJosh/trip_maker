@@ -13,13 +13,15 @@ type RedisStorageOptions = {
 const separator = String.fromCharCode(0x1f);
 
 // https://github.com/anomalyco/openauth/issues/37#issuecomment-2996998384
-export async function RedisStorage(options: RedisStorageOptions): Promise<StorageAdapter> {
+export async function RedisStorage(
+    options: RedisStorageOptions,
+): Promise<StorageAdapter> {
     const redis = await createClient({
         url: options.redis_url,
     })
         .on("error", (err) => console.log("Redis CLient Error", err))
         .connect();
-    
+
     const prefix = "storage";
 
     function create_redis_key(key: string[]): string {

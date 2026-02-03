@@ -1,7 +1,6 @@
 import { serve } from "@hono/node-server";
 import { issuer } from "@openauthjs/openauth/issuer";
 import { PasswordProvider } from "@openauthjs/openauth/provider/password";
-// import { MemoryStorage } from "@openauthjs/openauth/storage/memory";
 import { PasswordUI } from "@openauthjs/openauth/ui/password";
 import { eq } from "drizzle-orm";
 import { generateFromEmail } from "unique-username-generator";
