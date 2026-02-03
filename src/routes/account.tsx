@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { logoutFn } from "@/lib/auth/index.functions";
 
@@ -7,5 +7,15 @@ export const Route = createFileRoute("/account")({
 });
 
 function RouteComponent() {
-    return <div><Button onClick={() => logoutFn()}>Logout</Button></div>;
+    const navigate = useNavigate();
+
+    return (
+        <div>
+            <Button
+                onClick={() => logoutFn().then(() => navigate({ to: "/" }))}
+            >
+                Logout
+            </Button>
+        </div>
+    );
 }

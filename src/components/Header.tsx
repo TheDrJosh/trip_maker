@@ -39,7 +39,6 @@ function AuthHeader() {
         <Button
             // asChild
             onClick={async () => {
-                console.log("test");
                 const url = await loginFn();
 
                 if (url) {
