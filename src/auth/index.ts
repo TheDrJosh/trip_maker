@@ -1,7 +1,7 @@
 import { serve } from "@hono/node-server";
 import { issuer } from "@openauthjs/openauth/issuer";
 import { PasswordProvider } from "@openauthjs/openauth/provider/password";
-import { MemoryStorage } from "@openauthjs/openauth/storage/memory";
+// import { MemoryStorage } from "@openauthjs/openauth/storage/memory";
 import { PasswordUI } from "@openauthjs/openauth/ui/password";
 import { eq } from "drizzle-orm";
 import { generateFromEmail } from "unique-username-generator";
@@ -9,8 +9,7 @@ import { users } from "../db/schema.ts";
 import { subjects } from "../lib/auth/sesstion.ts";
 import { db } from "./db.ts";
 import { env } from "./env.ts";
-
-// import { StorageAdapter } from "@openauthjs/openauth/storage/storage";
+import { RedisStorage } from "./redis-storage.ts";
 
 async function getUser(email: string) {
     const db_user = await db.select().from(users).where(eq(users.email, email));
@@ -47,7 +46,7 @@ async function getUser(email: string) {
 
 const app = issuer({
     subjects,
-    storage: MemoryStorage(),
+    storage: await RedisStorage({ redis_url: env.REDIS_URL }),
     providers: {
         password: PasswordProvider(
             PasswordUI({
@@ -68,18 +67,6 @@ const app = issuer({
         throw new Error("Invalid provider");
     },
 });
-
-// type RedisStorageOptions {
-//     redis_url: string,
-//     key_prefix?: string,
-// }
-
-// https://github.com/anomalyco/openauth/issues/37#issuecomment-2996998384
-// function redisStorage(options: RedisStorageOptions): StorageAdapter {
-//     return {
-
-//     }
-// }
 
 serve({
     port: env.PORT,

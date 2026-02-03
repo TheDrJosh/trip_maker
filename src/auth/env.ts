@@ -5,6 +5,7 @@ import "dotenv/config";
 export const env = createEnv({
     server: {
         DATABASE_URL: z.string(),
+        REDIS_URL: z.string(),
         PORT: z.coerce.number().int(),
     },
 
