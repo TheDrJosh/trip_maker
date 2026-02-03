@@ -39,15 +39,11 @@ export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
 
 export const getCurrentUserFn = createServerFn({ method: "GET" }).handler(
     async () => {
-        console.log("get user 1");
         const session = await useAuthSession();
-        console.log("get user 2");
 
         if (!session.data.accessToken) {
             return false;
         }
-
-        console.log("get user 3");
 
         const verified = await authClient.verify(
             subjects,
@@ -57,25 +53,16 @@ export const getCurrentUserFn = createServerFn({ method: "GET" }).handler(
             },
         );
 
-        console.log("get user 4");
-
         if (verified.err) {
-            console.log(verified.err);
             return false;
         }
 
-        console.log("get user 5");
-
         if (verified.tokens) {
-            console.log("get user 6");
-
             await session.update({
                 accessToken: verified.tokens.access,
                 refreshToken: verified.tokens.refresh,
             });
         }
-
-        console.log("get user 7");
 
         return verified.subject;
     },

@@ -8,8 +8,6 @@ export const Route = createFileRoute("/api/callback")({
                 const url = new URL(request.url);
                 const code = url.searchParams.get("code");
 
-                console.log(code);
-
                 const session = await useAuthSession();
 
                 if (!code) {
@@ -23,10 +21,7 @@ export const Route = createFileRoute("/api/callback")({
 
                 const exchanged = await authClient.exchange(code, redirect_url);
 
-                console.log(exchanged);
-
                 if (exchanged.err) {
-                    console.log("error");
                     return Response.json(exchanged.err, { status: 400 });
                 }
 
