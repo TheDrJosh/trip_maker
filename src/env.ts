@@ -6,7 +6,8 @@ export const env = createEnv({
         DATABASE_URL: z.string(),
         SESSION_SECRET: z.string().min(32),
         TRIPADVISOR_API_KEY: z.string(),
-        AUTH_SERVER_URL: z.string(),
+        CLERK_SECRET_KEY: z.string(),
+        CLERK_SIGN_IN_URL: z.string().default("/sign-in")
     },
 
     /**
@@ -15,7 +16,9 @@ export const env = createEnv({
      */
     clientPrefix: "VITE_",
 
-    client: {},
+    client: {
+        VITE_CLERK_PUBLISHABLE_KEY: z.string(),
+    },
 
     /**
      * What object holds the environment variables at runtime. This is usually

@@ -1,14 +1,16 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useAuth } from "@/contexts/auth";
-import { loginUrlFn } from "@/lib/auth/index.functions";
+import {
+    SignedIn,
+    SignedOut,
+    SignInButton,
+    UserButton,
+} from "@clerk/tanstack-react-start";
+import { Link } from "@tanstack/react-router";
 import { Button } from "./ui/button";
 
 export default function Header() {
-    const { user } = useAuth();
-
     return (
         <>
-            <header className="p-4 flex items-center bg-zinc-800 text-white shadow-lg">
+            <header className="p-4 flex flex-row items-center bg-zinc-800 text-white shadow-lg">
                 <h1 className="ml-4 text-4xl font-black tracking-tighter">
                     <Link to="/">
                         <span className="text-zinc-300">Trip</span>{" "}
@@ -18,10 +20,18 @@ export default function Header() {
                     </Link>
                 </h1>
                 <div className="flex-1"></div>
-
-                <AuthHeader />
+                <div>
+                    <SignedIn>
+                        <UserButton />
+                    </SignedIn>
+                    <SignedOut>
+                        <Button asChild>
+                            <SignInButton />
+                        </Button>
+                    </SignedOut>
+                </div>
             </header>
-            {user ? (
+            <SignedIn>
                 <nav className="flex flex-col sm:flex-row bg-zinc-800">
                     <Button variant="link" asChild>
                         <Link to="/generate">Generate</Link>
@@ -30,37 +40,7 @@ export default function Header() {
                         <Link to="/favorites">Favorites</Link>
                     </Button>
                 </nav>
-            ) : null}
+            </SignedIn>
         </>
-    );
-}
-
-function AuthHeader() {
-    const { user } = useAuth();
-
-    const nav = useNavigate();
-
-    if (user) {
-        return (
-            <Button asChild>
-                <Link to="/account">{user.username}</Link>
-            </Button>
-        );
-    }
-
-    return (
-        <Button
-            onClick={async () => {
-                const url = await loginUrlFn();
-
-                if (url) {
-                    nav({ href: url });
-                } else {
-                    nav({ to: "/" });
-                }
-            }}
-        >
-            Sign in
-        </Button>
     );
 }

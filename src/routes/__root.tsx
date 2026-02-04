@@ -1,3 +1,5 @@
+import { ClerkProvider } from "@clerk/tanstack-react-start";
+import { dark } from "@clerk/themes";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import {
@@ -6,7 +8,6 @@ import {
     Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { AuthProvider } from "@/contexts/auth";
 import Header from "../components/Header";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
@@ -47,12 +48,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 <HeadContent />
             </head>
             <body className="min-h-screen flex flex-col dark">
-                <AuthProvider>
+                <ClerkProvider
+                    appearance={{
+                        theme: dark,
+                    }}
+                >
                     <Header />
                     <div className="bg-linear-to-b from-zinc-900 via-zinc-800 to-zinc-900 flex-1 text-white">
                         {children}
                     </div>
-                </AuthProvider>
+                </ClerkProvider>
                 <TanStackDevtools
                     config={{
                         position: "bottom-right",

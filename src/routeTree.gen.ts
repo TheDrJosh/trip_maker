@@ -11,10 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiCallbackRouteImport } from './routes/api/callback'
+import { Route as SignInSplatRouteImport } from './routes/sign-in.$'
 import { Route as AuthedGenerateRouteImport } from './routes/_authed/generate'
 import { Route as AuthedFavoritesRouteImport } from './routes/_authed/favorites'
-import { Route as AuthedAccountRouteImport } from './routes/_authed/account'
 
 const AuthedRoute = AuthedRouteImport.update({
   id: '/_authed',
@@ -25,9 +24,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiCallbackRoute = ApiCallbackRouteImport.update({
-  id: '/api/callback',
-  path: '/api/callback',
+const SignInSplatRoute = SignInSplatRouteImport.update({
+  id: '/sign-in/$',
+  path: '/sign-in/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedGenerateRoute = AuthedGenerateRouteImport.update({
@@ -40,54 +39,45 @@ const AuthedFavoritesRoute = AuthedFavoritesRouteImport.update({
   path: '/favorites',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedAccountRoute = AuthedAccountRouteImport.update({
-  id: '/account',
-  path: '/account',
-  getParentRoute: () => AuthedRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/account': typeof AuthedAccountRoute
   '/favorites': typeof AuthedFavoritesRoute
   '/generate': typeof AuthedGenerateRoute
-  '/api/callback': typeof ApiCallbackRoute
+  '/sign-in/$': typeof SignInSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/account': typeof AuthedAccountRoute
   '/favorites': typeof AuthedFavoritesRoute
   '/generate': typeof AuthedGenerateRoute
-  '/api/callback': typeof ApiCallbackRoute
+  '/sign-in/$': typeof SignInSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteWithChildren
-  '/_authed/account': typeof AuthedAccountRoute
   '/_authed/favorites': typeof AuthedFavoritesRoute
   '/_authed/generate': typeof AuthedGenerateRoute
-  '/api/callback': typeof ApiCallbackRoute
+  '/sign-in/$': typeof SignInSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/account' | '/favorites' | '/generate' | '/api/callback'
+  fullPaths: '/' | '/favorites' | '/generate' | '/sign-in/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/favorites' | '/generate' | '/api/callback'
+  to: '/' | '/favorites' | '/generate' | '/sign-in/$'
   id:
     | '__root__'
     | '/'
     | '/_authed'
-    | '/_authed/account'
     | '/_authed/favorites'
     | '/_authed/generate'
-    | '/api/callback'
+    | '/sign-in/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthedRoute: typeof AuthedRouteWithChildren
-  ApiCallbackRoute: typeof ApiCallbackRoute
+  SignInSplatRoute: typeof SignInSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -106,11 +96,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/callback': {
-      id: '/api/callback'
-      path: '/api/callback'
-      fullPath: '/api/callback'
-      preLoaderRoute: typeof ApiCallbackRouteImport
+    '/sign-in/$': {
+      id: '/sign-in/$'
+      path: '/sign-in/$'
+      fullPath: '/sign-in/$'
+      preLoaderRoute: typeof SignInSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed/generate': {
@@ -127,24 +117,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedFavoritesRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/account': {
-      id: '/_authed/account'
-      path: '/account'
-      fullPath: '/account'
-      preLoaderRoute: typeof AuthedAccountRouteImport
-      parentRoute: typeof AuthedRoute
-    }
   }
 }
 
 interface AuthedRouteChildren {
-  AuthedAccountRoute: typeof AuthedAccountRoute
   AuthedFavoritesRoute: typeof AuthedFavoritesRoute
   AuthedGenerateRoute: typeof AuthedGenerateRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
-  AuthedAccountRoute: AuthedAccountRoute,
   AuthedFavoritesRoute: AuthedFavoritesRoute,
   AuthedGenerateRoute: AuthedGenerateRoute,
 }
@@ -155,17 +136,18 @@ const AuthedRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthedRoute: AuthedRouteWithChildren,
-  ApiCallbackRoute: ApiCallbackRoute,
+  SignInSplatRoute: SignInSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }
